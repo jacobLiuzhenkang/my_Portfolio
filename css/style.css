@@ -1,0 +1,226 @@
+/* ========================================================================
+   css/style.css
+   自定义样式表 (Custom Stylesheet)
+   作用：补充 Tailwind CSS 无法直接生成的特殊视觉效果，以及 Markdown 文章的排版样式。
+   ======================================================================== */
+
+/* 1. 隐藏滚动条 (Hide Scrollbar) */
+/* 这里的逻辑是：让内容可以滚动，但不要显示那个丑陋的灰色条 */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE, Edge */
+    scrollbar-width: none;    /* Firefox */
+}
+
+/* 2. 玻璃拟态 (Glassmorphism) */
+/* 用于 About 区域的卡片背景，制造高级的通透感 */
+.glass {
+    background: rgba(255, 255, 255, 0.03); /* 极低透明度的白色背景 */
+    backdrop-filter: blur(24px);           /* 背景模糊 (Blur)，核心属性 */
+    -webkit-backdrop-filter: blur(24px);   /* 兼容 Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* 淡淡的描边 */
+}
+
+/* 3. 噪点纹理 (Noise Texture) */
+/* 这是一个 SVG 格式的噪点图片，叠加在背景上增加胶片质感 */
+.bg-noise {
+    background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+}
+
+/* ============================================================
+   4. 微交互：聚光灯列表效果 (Focus Hover Effect)
+   ============================================================ */
+
+/* 1. 基础状态 */
+/* 1. 基础状态：定义顺滑的动画曲线 */
+.project-card {
+    /* 指定要动画的属性：变换(大小)、透明度、模糊度、边框色 
+       这样写比 'all' 性能更好，且更精准
+    */
+    transition-property: transform, opacity, filter, border-color;
+    
+    /* 增加时长到 0.6秒，让动作看得清 */
+    transition-duration: 0.6s;
+    
+    /* 核心魔法：贝塞尔曲线 (Cubic Bezier)
+       这个曲线模拟了物理惯性：快速开始 -> 极其缓慢平滑地结束
+    */
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+    
+    position: relative;
+    z-index: 1;
+    
+    /* 性能优化：告诉浏览器即将发生变化，防止卡顿 */
+    will-change: transform, opacity;
+}
+
+/* 2. 容器悬停时 -> 其他人优雅地退后变暗 */
+.hover-group:hover .project-card {
+    opacity: 0.4;
+    filter: blur(3px) grayscale(40%); /* 稍微增加模糊度，营造景深感 */
+    transform: scale(0.96); /* 没被选中的稍微缩小一点点 */
+}
+
+/* 3. 当前选中 -> 优雅地放大浮起 */
+.hover-group .project-card:hover {
+    opacity: 1 !important;
+    filter: blur(0) grayscale(0%) !important;
+    transform: scale(1.03) !important; /* 放大比例稍微克制一点，更高级 */
+    z-index: 50 !important;
+    box-shadow: none !important; /* 保持去掉了投影 */
+    border-color: rgba(255,255,255,0.5); /* 边框稍微亮一点 */
+}
+
+/* ========================================================================
+   5. Markdown 文章排版 (Typography for Markdown)
+   类名：.prose
+   作用：当你点击作品详情时，加载进来的文字是没有样式的。
+   这里定义了标题、段落、图片、引用等元素具体长什么样。
+   ======================================================================== */
+
+/* 全局容器文字设置 */
+.prose {
+    color: rgba(255, 255, 255, 0.8); /* 正文颜色：80% 白 */
+    line-height: 1.8;                /* 行高：让阅读更舒适 */
+    font-size: 1.1rem;               /* 字号：稍微大一点点 */
+}
+
+/* 标题通用设置 (Headings) */
+.prose h1, .prose h2, .prose h3 {
+    color: #ffffff;
+    font-weight: 700;    /* 粗体 */
+    margin-top: 2em;     /* 段前距：标题上面空大一点 */
+    margin-bottom: 0.8em;/* 段后距 */
+    line-height: 1.3;
+}
+
+/* H1 一级标题 (通常是文章大标题) */
+.prose h1 {
+    font-size: 2.5em;
+    border-bottom: 1px solid rgba(255,255,255,0.1); /* 标题下加一条淡淡的分割线 */
+    padding-bottom: 0.5em;
+}
+
+/* H2 二级标题 (小节标题) */
+.prose h2 {
+    font-size: 1.8em;
+    color: #a78bfa; /* 使用了紫色 (Tailwind purple-400) 来区分层级 */
+}
+
+/* H3 三级标题 */
+.prose h3 {
+    font-size: 1.4em;
+}
+
+/* 段落 (Paragraphs) */
+.prose p {
+    margin-bottom: 1.5em; /* 段落之间留空 */
+}
+
+/* 列表 (Lists) */
+.prose ul {
+    list-style-type: disc; /* 圆点列表 */
+    padding-left: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.prose ol {
+    list-style-type: decimal; /* 数字列表 1. 2. 3. */
+    padding-left: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.prose li {
+    margin-bottom: 0.5em;
+    color: rgba(255,255,255,0.7);
+}
+
+/* 加粗 (Bold) */
+.prose strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* 引用块 (Blockquotes) */
+.prose blockquote {
+    border-left: 4px solid #7c3aed; /* 左侧紫色的竖线 */
+    padding-left: 1em;
+    margin: 2em 0;
+    color: rgba(255,255,255,0.5);   /* 灰色文字 */
+    font-style: italic;             /* 斜体 */
+    background: rgba(255,255,255,0.02); /* 微微发亮的背景 */
+    padding: 1rem;
+    border-radius: 0 12px 12px 0;
+}
+
+/* 图片 (Images) */
+.prose img {
+    border-radius: 16px; /* 圆角 */
+    margin: 2.5em auto;  /* 上下留白 */
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid rgba(255,255,255,0.1); /* 图片描边 */
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5); /* 阴影 */
+}
+
+/* 视频嵌入容器 (Iframes) */
+.prose iframe {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 链接 (Links) */
+.prose a {
+    color: #a78bfa; /* 紫色链接 */
+    text-decoration: underline;
+    text-underline-offset: 4px; /* 下划线稍微离文字远一点 */
+}
+
+/* 代码块 (Code) */
+.prose code {
+    background: rgba(255,255,255,0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: monospace; /* 等宽字体 */
+    color: #e9d5ff; /* 浅紫色代码文字 */
+}
+
+/* ============================================================
+   6. 高级定制滚动条 (Premium Custom Scrollbar)
+   作用：替换系统默认丑陋的白底滚动条，改为悬浮、半透明、极简风格。
+   ============================================================ */
+
+/* 针对 WebKit 浏览器 (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;  /* 纵向滚动条宽度：非常细，不抢眼 */
+    height: 6px; /* 横向滚动条高度 */
+}
+
+/* 滚动条轨道 (Track) - 完全透明 */
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; 
+    margin: 4px 0; /* 上下留一点空隙，不顶头 */
+}
+
+/* 滚动条滑块 (Thumb) - 半透明胶囊 */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2); /* 平时是淡淡的白 */
+    border-radius: 99px; /* 胶囊圆角 */
+    backdrop-filter: blur(4px); /* 增加一点毛玻璃感 */
+}
+
+/* 鼠标悬停在滚动条上时 (Hover) */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5); /* 悬停时变亮，提示可拖动 */
+    cursor: pointer;
+}
+
+/* 兼容火狐 (Firefox) 的新标准写法 */
+.custom-scrollbar {
+    scrollbar-width: thin; /* 变细 */
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* 滑块色 轨道色 */
+}

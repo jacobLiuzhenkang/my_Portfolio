@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的作品集 | Portfolio</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.staticfile.net/marked/9.1.6/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    // Animation (动画): 这里定义了那个紫色光球的漂浮效果和淡入效果
+                    animation: {
+                        'blob': 'blob 10s infinite', // 光球无限循环漂浮
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards', // 向上淡入
+                        'fade-in': 'fadeIn 0.3s ease-out forwards', // 纯淡入
+                    },
+                    // Keyframes (关键帧): 定义动画具体的运动轨迹
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' }, // 向右上方移动并放大
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },  // 向左下方移动并缩小
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeInUp: {
+                            'from': { opacity: 0, transform: 'translateY(30px)' }, // 从下方30px处开始
+                            'to': { opacity: 1, transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            'from': { opacity: 0 },
+                            'to': { opacity: 1 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-black text-white overflow-x-hidden selection:bg-purple-500 selection:text-white">
+
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div id="blob-1" class="absolute top-[-10%] left-[-10%] w-[80vw] md:w-[60vw] h-[80vw] md:h-[60vw] bg-purple-700/30 rounded-full mix-blend-screen filter blur-[100px] transition-transform duration-100 ease-out"></div>    
+        <div id="blob-2" class="absolute top-[30%] right-[-10%] w-[70vw] md:w-[50vw] h-[70vw] md:h-[50vw] bg-emerald-600/20 rounded-full mix-blend-screen filter blur-[100px] transition-transform duration-100 ease-out"></div>    
+        <div id="blob-3" class="absolute bottom-[-10%] left-[20%] w-[60vw] md:w-[50vw] h-[60vw] md:h-[50vw] bg-orange-600/20 rounded-full mix-blend-screen filter blur-[100px] transition-transform duration-100 ease-out"></div>    
+        <div class="absolute inset-0 bg-noise opacity-30"></div>
+    </div>
+
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="window.scrollTo({ top: 0, behavior: 'smooth'})">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center font-bold text-xs shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">LZ</div>
+                <span class="font-bold tracking-tight text-xl">Portfolio.</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-1">
+                <button onclick="scrollToSection('work')" class="px-5 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all">Work</button>
+                <button onclick="scrollToSection('about')" class="px-5 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all">About</button>
+                <button onclick="scrollToSection('contact')" class="px-5 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all">Contact</button>
+            </div>
+            
+            <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-white/80 hover:text-white active:scale-95">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] opacity-0 invisible transition-all duration-300"></div>
+    <div id="mobile-menu" class="fixed top-0 right-0 h-full w-[75vw] max-w-sm bg-[#0a0a0a] border-l border-white/10 z-[100] shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="flex flex-col h-full p-8 relative z-10">
+            <div class="flex justify-end mb-12">
+                <button onclick="toggleMobileMenu()" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"><i data-lucide="x"></i></button>
+            </div>
+            <div class="flex flex-col gap-8">
+                <button onclick="scrollToSection('work')" class="text-3xl font-bold text-left hover:text-purple-400 transition-colors flex justify-between group">Work <i data-lucide="arrow-right" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-purple-400"></i></button>
+                <button onclick="scrollToSection('about')" class="text-3xl font-bold text-left hover:text-purple-400 transition-colors flex justify-between group">About <i data-lucide="arrow-right" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-purple-400"></i></button>
+                <button onclick="scrollToSection('contact')" class="text-3xl font-bold text-left hover:text-purple-400 transition-colors flex justify-between group">Contact <i data-lucide="arrow-right" class="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-purple-400"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <section class="relative z-10 pt-32 pb-10 px-6 max-w-7xl mx-auto min-h-[60vh] flex flex-col justify-center">
+        <div class="max-w-4xl animate-fade-in-up">
+            <h1 class="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8">
+                Designing <br />
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-white to-blue-300 animate-gradient-x" id="hero-headline"></span>
+            </h1>
+            <p class="text-lg md:text-2xl text-white/60 max-w-2xl mb-10 leading-relaxed">
+                我是 <span id="hero-name"></span>，<span id="hero-sub"></span>
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="scrollToSection('work')" class="px-8 py-4 rounded-full bg-white text-black font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]">浏览作品 Explore Work</button>
+                <button onclick="openDocList()" class="px-8 py-4 rounded-full bg-white/5 border border-white/10 backdrop-blur text-white font-medium hover:bg-white/10 text-center transition-all flex items-center justify-center gap-2">
+                    <span>简历与附件 Resume</span> <i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="work" class="relative z-10 py-10 px-4 md:px-6 max-w-7xl mx-auto scroll-mt-24">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+            <h2 class="text-3xl font-bold">Selected Works</h2>
+            <div class="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+                <div class="inline-flex p-1 rounded-full bg-white/10 backdrop-blur-md border border-white/5 whitespace-nowrap">
+                    <button class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">All Works</button>
+                    <button class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all" data-filter="ui">UI / UX</button>
+                    <button class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all" data-filter="visual">Visual Design</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div id="projects-wrapper" class="relative overflow-hidden transition-all duration-1000 ease-in-out max-h-[1100px] [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8"></div>
+            </div>
+            
+            <div id="projects-overlay" class="absolute bottom-0 left-0 right-0 h-32 flex items-end justify-center pb-4 z-20 hidden pointer-events-none">
+                <button onclick="expandProjects()" class="pointer-events-auto relative z-30 group flex flex-col items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
+                    <div class="px-8 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white font-bold flex items-center gap-2 shadow-2xl hover:bg-white hover:text-black transition-all">
+                        <span>View All Works</span> <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 px-4 md:px-6 max-w-7xl mx-auto scroll-mt-24">
+        <div class="glass rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden group">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-[80px] group-hover:bg-white/20 transition-all duration-700"></div>
+            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6">More than visuals.</h2>
+                    <p id="about-text" class="text-lg text-white/60 mb-8 leading-relaxed"></p>
+                    <div id="about-skills" class="flex flex-wrap gap-3"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="aspect-square rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/5 p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                        <div class="text-4xl font-bold text-purple-400">3+</div>
+                        <div class="text-sm text-white/50">Years of UI experience</div>
+                    </div>
+                    <div class="aspect-square rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/5 p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                        <div class="text-4xl font-bold text-emerald-400">ROI</div>
+                        <div class="text-sm text-white/50">Business Driven Design</div>
+                    </div>
+                    <div class="aspect-square rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/5 p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                        <div class="text-4xl font-bold text-blue-400">Dev</div>
+                        <div class="text-sm text-white/50">Friendly Ready</div>
+                    </div>
+                    <button onclick="openDocList()" class="aspect-square rounded-2xl bg-white text-black border border-white/5 p-6 flex flex-col justify-center items-center text-center cursor-pointer active:scale-95 transition-transform hover:bg-gray-200">
+                        <span class="font-bold text-lg">Resume</span>
+                        <span class="text-xs opacity-60">View & Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="py-12 border-t border-white/10 bg-black text-center pb-32 md:pb-12 scroll-mt-10">
+        <h2 class="text-2xl font-bold mb-8">Let's Connect</h2>
+        <div class="flex justify-center gap-6 mb-8">
+            <button onclick="copyEmail()" class="group flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white hover:text-black transition-all cursor-pointer">
+                <i data-lucide="mail" class="w-5 h-5"></i><span class="font-medium">Send Email</span>
+            </button>
+            <button onclick="openWechatModal()" class="group flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#07c160] hover:text-white hover:border-[#07c160] transition-all">
+                <i data-lucide="message-square" class="w-5 h-5"></i><span class="font-medium">WeChat</span>
+            </button>
+        </div>
+        <p class="text-white/30 text-sm">© 2025 <span id="footer-name"></span>. Built with Liquid Glass UI.</p>
+    </footer>
+
+    <div id="modal-overlay" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md opacity-0 invisible transition-all duration-300 flex items-end md:items-center justify-center p-0 md:p-4" onclick="closeModal()">
+        <div id="modal-content" class="bg-[#0a0a0a] w-full max-w-5xl h-[95vh] md:h-[90vh] rounded-t-3xl md:rounded-3xl border border-white/10 relative overflow-hidden transform translate-y-full transition-transform duration-300 shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+            <div class="absolute top-0 left-0 right-0 h-20 bg-black/50 backdrop-blur-xl border-b border-white/5 z-50 flex items-center justify-end px-6 md:px-8">
+                <button onclick="closeModal()" class="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all border border-white/5"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto pt-20 relative bg-[#0a0a0a] custom-scrollbar">
+                <div id="content-story" class="animate-fade-in-up">
+                    <div id="story-header" class="h-64 md:h-96 relative flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 bg-noise opacity-20 z-0"></div>
+                        <div id="story-header-content" class="z-10 text-center px-4 flex flex-col items-center"></div>
+                    </div>
+                    <div class="p-8 md:p-16 max-w-4xl mx-auto">
+                        <div id="story-body" class="prose prose-invert prose-lg max-w-none text-white/70"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="doc-list-modal" class="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm opacity-0 invisible transition-all duration-300 flex items-center justify-center p-4" onclick="closeDocList()">
+        <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-2xl overflow-hidden transform scale-95 transition-all duration-300 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Select Document</h3>
+                <button onclick="closeDocList()" class="text-white/50 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="doc-list-container" class="p-2 flex flex-col gap-1"></div>
+        </div>
+    </div>
+
+    <div id="pdf-preview-modal" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md opacity-0 invisible transition-all duration-300 flex flex-col" onclick="closePdfPreview()">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#0a0a0a]" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-white">
+                <div class="p-2 bg-white/10 rounded-lg"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                <span id="pdf-title" class="font-bold truncate max-w-[200px] md:max-w-md text-sm md:text-base">Preview</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a id="pdf-download-btn" href="#" download class="px-4 py-2 rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden md:inline">Download</span>
+                </a>
+                <button onclick="closePdfPreview()" class="p-2 rounded-full hover:bg-white/10 text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+        <div class="flex-1 bg-[#111] relative w-full h-full flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center justify-center z-0 text-white/30 animate-pulse">Loading Preview...</div>
+            <iframe id="pdf-frame" src="" class="relative z-10 w-full h-full border-none" title="PDF Preview"></iframe>
+        </div>
+    </div>
+
+    <div id="wechat-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm opacity-0 invisible transition-all duration-300 flex items-center justify-center p-4" onclick="closeWechatModal()">
+        <div class="bg-[#1a1a1a] border border-white/10 p-8 rounded-3xl shadow-2xl transform scale-95 transition-all duration-300 flex flex-col items-center max-w-sm w-full relative" onclick="event.stopPropagation()">
+            <button onclick="closeWechatModal()" class="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 class="text-xl font-bold text-white mb-6">Add me on WeChat</h3>
+            <div class="bg-white p-2 rounded-xl mb-6">
+                <img id="wechat-qr-img" src="" alt="WeChat QR Code" class="w-48 h-48 md:w-64 md:h-64 object-cover">
+            </div>
+            <p class="text-white/40 text-sm text-center">Scan the QR code to connect</p>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[300] bg-white text-black px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-500 pointer-events-none">
+        <div class="bg-green-500 rounded-full p-1 text-white"><i data-lucide="check" class="w-3 h-3"></i></div>
+        <span class="font-medium text-sm">邮箱已复制 / Email Copied</span>
+    </div>
+
+    <script src="data.js"></script>
+    
+    <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
