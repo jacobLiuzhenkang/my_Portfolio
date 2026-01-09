@@ -1,226 +1,265 @@
 /* ========================================================================
    css/style.css
-   自定义样式表 (Custom Stylesheet)
-   作用：补充 Tailwind CSS 无法直接生成的特殊视觉效果，以及 Markdown 文章的排版样式。
+   自定义样式表 (Custom Stylesheet) - Mobile Optimized
    ======================================================================== */
 
+/* 0. 全局设置 & 安全区域变量 */
+:root {
+    /* 定义 CSS 变量以便在 calc() 中使用 */
+    --safe-top: env(safe-area-inset-top, 20px);
+    --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+html {
+    -webkit-text-size-adjust: 100%; /* 防止横屏时字体自动放大 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* 1. 隐藏滚动条 (Hide Scrollbar) */
-/* 这里的逻辑是：让内容可以滚动，但不要显示那个丑陋的灰色条 */
 .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none; 
 }
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE, Edge */
-    scrollbar-width: none;    /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;    
 }
 
 /* 2. 玻璃拟态 (Glassmorphism) */
-/* 用于 About 区域的卡片背景，制造高级的通透感 */
 .glass {
-    background: rgba(255, 255, 255, 0.03); /* 极低透明度的白色背景 */
-    backdrop-filter: blur(24px);           /* 背景模糊 (Blur)，核心属性 */
-    -webkit-backdrop-filter: blur(24px);   /* 兼容 Safari */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* 淡淡的描边 */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(24px);           
+    -webkit-backdrop-filter: blur(24px);   
+    border: 1px solid rgba(255, 255, 255, 0.08); 
 }
 
 /* 3. 噪点纹理 (Noise Texture) */
-/* 这是一个 SVG 格式的噪点图片，叠加在背景上增加胶片质感 */
 .bg-noise {
     background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
 }
 
 /* ============================================================
-   4. 微交互：聚光灯列表效果 (Focus Hover Effect)
+   4. 微交互：响应式卡片逻辑 (Responsive Interaction)
    ============================================================ */
 
-/* 1. 基础状态 */
-/* 1. 基础状态：定义顺滑的动画曲线 */
 .project-card {
-    /* 指定要动画的属性：变换(大小)、透明度、模糊度、边框色 
-       这样写比 'all' 性能更好，且更精准
-    */
     transition-property: transform, opacity, filter, border-color;
-    
-    /* 增加时长到 0.6秒，让动作看得清 */
-    transition-duration: 0.6s;
-    
-    /* 核心魔法：贝塞尔曲线 (Cubic Bezier)
-       这个曲线模拟了物理惯性：快速开始 -> 极其缓慢平滑地结束
-    */
-    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
-    
+    transition-duration: 0.4s; /* 移动端动画加快，感觉更跟手 */
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     z-index: 1;
-    
-    /* 性能优化：告诉浏览器即将发生变化，防止卡顿 */
-    will-change: transform, opacity;
+    will-change: transform;
+    -webkit-tap-highlight-color: transparent; /* 关键：去掉安卓/iOS点击时的蓝色高亮块 */
+    touch-action: manipulation; /* 优化点击响应速度 */
 }
 
-/* 2. 容器悬停时 -> 其他人优雅地退后变暗 */
-.hover-group:hover .project-card {
-    opacity: 0.4;
-    filter: blur(3px) grayscale(40%); /* 稍微增加模糊度，营造景深感 */
-    transform: scale(0.96); /* 没被选中的稍微缩小一点点 */
+/* --- 仅在电脑端 (有鼠标) 启用高级悬停特效 --- */
+@media (hover: hover) and (pointer: fine) {
+    .project-card {
+        transition-duration: 0.5s; /* 电脑端保持优雅的慢速过渡 */
+    }
+
+    /* 容器悬停时 -> 其他卡片变暗 */
+    .hover-group:hover .project-card {
+        opacity: 0.4;
+        filter: blur(3px) grayscale(40%);
+        transform: scale(0.96);
+    }
+
+    /* 当前选中 -> 放大浮起 */
+    .hover-group .project-card:hover {
+        opacity: 1 !important;
+        filter: blur(0) grayscale(0%) !important;
+        transform: scale(1.03) !important;
+        z-index: 50 !important;
+        border-color: rgba(255,255,255,0.5);
+    }
 }
 
-/* 3. 当前选中 -> 优雅地放大浮起 */
-.hover-group .project-card:hover {
-    opacity: 1 !important;
-    filter: blur(0) grayscale(0%) !important;
-    transform: scale(1.03) !important; /* 放大比例稍微克制一点，更高级 */
-    z-index: 50 !important;
-    box-shadow: none !important; /* 保持去掉了投影 */
-    border-color: rgba(255,255,255,0.5); /* 边框稍微亮一点 */
+/* --- 移动端 (触屏) 交互逻辑 --- */
+/* 手机上不需要其他卡片变暗，只需要当前点击的卡片有“按压感” */
+.project-card:active {
+    transform: scale(0.96); 
+    opacity: 0.9;
 }
 
 /* ========================================================================
-   5. Markdown 文章排版 (Typography for Markdown)
-   类名：.prose
-   作用：当你点击作品详情时，加载进来的文字是没有样式的。
-   这里定义了标题、段落、图片、引用等元素具体长什么样。
+   5. Markdown 文章排版 (Typography)
+   针对移动端阅读进行了大幅优化：减小标题尺寸，增加正文行距
    ======================================================================== */
 
-/* 全局容器文字设置 */
 .prose {
-    color: rgba(255, 255, 255, 0.8); /* 正文颜色：80% 白 */
-    line-height: 1.8;                /* 行高：让阅读更舒适 */
-    font-size: 1.1rem;               /* 字号：稍微大一点点 */
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.75; 
+    font-size: 1rem;  
 }
 
-/* 标题通用设置 (Headings) */
-.prose h1, .prose h2, .prose h3 {
+/* 平板和电脑端放大字号 */
+@media (min-width: 768px) {
+    .prose {
+        line-height: 1.8;
+        font-size: 1.125rem;
+    }
+}
+
+/* 标题通用设置 */
+.prose h1, .prose h2, .prose h3, .prose h4 {
     color: #ffffff;
-    font-weight: 700;    /* 粗体 */
-    margin-top: 2em;     /* 段前距：标题上面空大一点 */
-    margin-bottom: 0.8em;/* 段后距 */
+    font-weight: 700;
     line-height: 1.3;
+    scroll-margin-top: 100px; /* 锚点定位偏移 */
 }
 
-/* H1 一级标题 (通常是文章大标题) */
+/* H1 一级标题 */
 .prose h1 {
-    font-size: 2.5em;
-    border-bottom: 1px solid rgba(255,255,255,0.1); /* 标题下加一条淡淡的分割线 */
-    padding-bottom: 0.5em;
+    font-size: 1.75em; 
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.3em;
 }
 
-/* H2 二级标题 (小节标题) */
+@media (min-width: 768px) {
+    .prose h1 { font-size: 2.5em; margin-top: 2em; }
+}
+
+/* H2 二级标题 */
 .prose h2 {
-    font-size: 1.8em;
-    color: #a78bfa; /* 使用了紫色 (Tailwind purple-400) 来区分层级 */
+    font-size: 1.4em;
+    color: #a78bfa; /* 紫色高亮 */
+    margin-top: 1.8em;
+    margin-bottom: 0.6em;
+}
+@media (min-width: 768px) {
+    .prose h2 { font-size: 1.8em; margin-top: 2.5em; }
 }
 
 /* H3 三级标题 */
 .prose h3 {
-    font-size: 1.4em;
+    font-size: 1.2em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+@media (min-width: 768px) {
+    .prose h3 { font-size: 1.4em; }
 }
 
-/* 段落 (Paragraphs) */
+/* 段落 */
 .prose p {
-    margin-bottom: 1.5em; /* 段落之间留空 */
-}
-
-/* 列表 (Lists) */
-.prose ul {
-    list-style-type: disc; /* 圆点列表 */
-    padding-left: 1.5em;
     margin-bottom: 1.5em;
+    text-align: justify; /* 移动端两端对齐，消除右侧参差不齐 */
 }
 
-.prose ol {
-    list-style-type: decimal; /* 数字列表 1. 2. 3. */
-    padding-left: 1.5em;
+/* 列表 */
+.prose ul, .prose ol {
+    padding-left: 1.2em;
     margin-bottom: 1.5em;
 }
 
 .prose li {
     margin-bottom: 0.5em;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.75);
+    padding-left: 0.2em;
 }
 
-/* 加粗 (Bold) */
 .prose strong {
     color: #fff;
     font-weight: 700;
 }
 
-/* 引用块 (Blockquotes) */
+/* 引用块 - 移动端样式优化 */
 .prose blockquote {
-    border-left: 4px solid #7c3aed; /* 左侧紫色的竖线 */
-    padding-left: 1em;
-    margin: 2em 0;
-    color: rgba(255,255,255,0.5);   /* 灰色文字 */
-    font-style: italic;             /* 斜体 */
-    background: rgba(255,255,255,0.02); /* 微微发亮的背景 */
+    border-left: 3px solid #7c3aed;
+    margin: 1.5em 0;
+    background: rgba(255,255,255,0.03);
     padding: 1rem;
     border-radius: 0 12px 12px 0;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
 }
 
-/* 图片 (Images) */
+/* 图片 - 增加圆角和边框 */
 .prose img {
-    border-radius: 16px; /* 圆角 */
-    margin: 2.5em auto;  /* 上下留白 */
+    border-radius: 12px;
+    margin: 2em auto;
     width: 100%;
-    max-width: 100%;
-    border: 1px solid rgba(255,255,255,0.1); /* 图片描边 */
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5); /* 阴影 */
+    height: auto;
+    display: block;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
 }
 
-/* 视频嵌入容器 (Iframes) */
+/* 视频容器 */
 .prose iframe {
     width: 100%;
-    border-radius: 16px;
+    aspect-ratio: 16/9; 
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.1);
+    margin: 2em 0;
 }
 
-/* 链接 (Links) */
+/* 链接 */
 .prose a {
-    color: #a78bfa; /* 紫色链接 */
-    text-decoration: underline;
-    text-underline-offset: 4px; /* 下划线稍微离文字远一点 */
+    color: #c4b5fd;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(167, 139, 250, 0.5);
+    transition: all 0.2s;
+    word-break: break-all;
+}
+.prose a:hover {
+    color: #fff;
+    border-bottom-style: solid;
 }
 
-/* 代码块 (Code) */
+/* 代码块 */
 .prose code {
     background: rgba(255,255,255,0.1);
     padding: 0.2em 0.4em;
     border-radius: 6px;
+    font-size: 0.85em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: #e9d5ff;
+}
+
+.prose pre {
+    background: #111;
+    padding: 1em;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+}
+.prose pre code {
+    background: transparent;
+    padding: 0;
+    color: #ccc;
     font-size: 0.9em;
-    font-family: monospace; /* 等宽字体 */
-    color: #e9d5ff; /* 浅紫色代码文字 */
 }
 
 /* ============================================================
    6. 高级定制滚动条 (Premium Custom Scrollbar)
-   作用：替换系统默认丑陋的白底滚动条，改为悬浮、半透明、极简风格。
    ============================================================ */
-
-/* 针对 WebKit 浏览器 (Chrome, Safari, Edge) */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;  /* 纵向滚动条宽度：非常细，不抢眼 */
-    height: 6px; /* 横向滚动条高度 */
-}
-
-/* 滚动条轨道 (Track) - 完全透明 */
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent; 
-    margin: 4px 0; /* 上下留一点空隙，不顶头 */
-}
-
-/* 滚动条滑块 (Thumb) - 半透明胶囊 */
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2); /* 平时是淡淡的白 */
-    border-radius: 99px; /* 胶囊圆角 */
-    backdrop-filter: blur(4px); /* 增加一点毛玻璃感 */
-}
-
-/* 鼠标悬停在滚动条上时 (Hover) */
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5); /* 悬停时变亮，提示可拖动 */
-    cursor: pointer;
-}
-
-/* 兼容火狐 (Firefox) 的新标准写法 */
-.custom-scrollbar {
-    scrollbar-width: thin; /* 变细 */
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* 滑块色 轨道色 */
+/* 仅在电脑端显示自定义滚动条，手机端使用系统原生（体验更好） */
+@media (min-width: 768px) {
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent; 
+        margin: 4px 0;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 99px;
+        backdrop-filter: blur(4px);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+    }
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
 }

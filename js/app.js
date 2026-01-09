@@ -3,7 +3,7 @@ import * as UI from './ui.js';
 import * as Utils from './utils.js';
 
 // --- 全局变量与数据获取 ---
-// 这里的 projects 和 personalInfo 来自 data.js
+// 确保 window.projects 和 window.personalInfo 在 data.js 中已定义
 const getProjects = () => window.projects || [];
 const getInfo = () => window.personalInfo || {};
 
@@ -11,20 +11,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 初始化个人信息 (Inject Personal Info)
     const info = getInfo();
     if (info.name) {
+        // 设置网页标题
         document.title = `${info.name} | ${info.title}`;
+        
+        // 使用工具函数安全设置文本
         Utils.setText('hero-headline', info.headline);
-        Utils.setText('hero-name', `${info.name} (${info.englishName})`);
+        Utils.setText('hero-name', `${info.name} ${info.englishName ? `(${info.englishName})` : ''}`);
         Utils.setText('hero-sub', info.subHeadline);
         Utils.setText('footer-name', info.englishName);
         Utils.setText('about-text', info.aboutText);
 
+        // 渲染技能标签
         const skillsContainer = document.getElementById('about-skills');
         if (skillsContainer && info.skills) {
             skillsContainer.innerHTML = '';
             info.skills.forEach(skill => {
                 const span = document.createElement('span');
-                // 恢复你原始的 Tailwind 样式类
-                span.className = "px-4 py-2 rounded-lg bg-white/5 border border-white/5 text-sm";
+                // 移动端调整为更小的内边距和字号
+                span.className = "px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-white/5 border border-white/5 text-xs md:text-sm text-white/70 whitespace-nowrap";
                 span.innerText = skill;
                 skillsContainer.appendChild(span);
             });
@@ -62,22 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. 监听滚动条，改变导航栏透明度 (Navbar Scroll Effect)
     window.addEventListener('scroll', () => {
         const nav = document.getElementById('navbar');
-        if (window.scrollY > 50) {
-            nav.classList.add('bg-black/70', 'backdrop-blur-xl', 'border-b', 'border-white/10');
+        if (!nav) return;
+        
+        // 移动端超过 20px 就开始变色，电脑端保持 50px
+        const threshold = window.innerWidth < 768 ? 20 : 50;
+        
+        if (window.scrollY > threshold) {
+            nav.classList.add('bg-black/80', 'backdrop-blur-xl', 'border-b', 'border-white/5');
         } else {
-            nav.classList.remove('bg-black/70', 'backdrop-blur-xl', 'border-b', 'border-white/10');
+            nav.classList.remove('bg-black/80', 'backdrop-blur-xl', 'border-b', 'border-white/5');
         }
     });
 
     // 5. 初始化图标 (Init Icons)
     if (window.lucide) window.lucide.createIcons();
 
-    // --- 新增：背景流体跟随效果 ---
+    // --- 新增：背景流体跟随效果 (增加了 Touch 支持) ---
     const blob1 = document.getElementById('blob-1');
     const blob2 = document.getElementById('blob-2');
     const blob3 = document.getElementById('blob-3');
 
-    // 记录鼠标位置
+    // 初始位置设为屏幕中心，防止一开始光斑都在左上角
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
 
@@ -86,35 +95,49 @@ document.addEventListener('DOMContentLoaded', () => {
     let blob2X = 0, blob2Y = 0;
     let blob3X = 0, blob3Y = 0;
 
-    // 1. 监听鼠标移动，更新目标坐标
+    // 更新目标坐标的通用函数
+    const updateTarget = (x, y) => {
+        mouseX = x;
+        mouseY = y;
+    };
+
+    // 1. 监听鼠标移动
     window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        updateTarget(e.clientX, e.clientY);
     });
 
-    // 2. 动画循环 (每一帧都执行，让光球慢慢追赶鼠标)
-    function animateBlobs() {
-        // 核心算法：当前位置 = 当前位置 + (目标位置 - 当前位置) * 速度系数
-        // 0.05 是慢速，0.1 是中速。不同的速度会产生“拉扯感”。
-        
-        // Blob 1: 跑得最慢 (深层背景感)
-        blob1X += (mouseX - window.innerWidth/2 - blob1X) * 0.02;
-        blob1Y += (mouseY - window.innerHeight/2 - blob1Y) * 0.02;
+    // 2. 监听触摸移动 (Mobile Touch Support)
+    window.addEventListener('touchmove', (e) => {
+        if(e.touches.length > 0) {
+            // 获取第一个触点的位置
+            updateTarget(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    }, { passive: true }); // passive: true 提高滚动性能
 
-        // Blob 2: 跑得中等，而且反方向移动 (增加动感)
-        blob2X += (window.innerWidth - mouseX - window.innerWidth/2 - blob2X) * 0.04;
-        blob2Y += (mouseY - window.innerHeight/2 - blob2Y) * 0.04;
+    // 3. 动画循环
+    function animateBlobs() {
+        // 移动端适当减小移动幅度，避免晕眩
+        const isMobile = window.innerWidth < 768;
+        const speedFactor = isMobile ? 0.5 : 1; 
+
+        // Blob 1: 跑得最慢
+        blob1X += (mouseX - window.innerWidth/2 - blob1X) * 0.02 * speedFactor;
+        blob1Y += (mouseY - window.innerHeight/2 - blob1Y) * 0.02 * speedFactor;
+
+        // Blob 2: 反方向移动
+        blob2X += (window.innerWidth - mouseX - window.innerWidth/2 - blob2X) * 0.04 * speedFactor;
+        blob2Y += (mouseY - window.innerHeight/2 - blob2Y) * 0.04 * speedFactor;
 
         // Blob 3: 跑得最快
-        blob3X += (mouseX - window.innerWidth/2 - blob3X) * 0.06;
-        blob3Y += (window.innerHeight - mouseY - window.innerHeight/2 - blob3Y) * 0.06;
+        blob3X += (mouseX - window.innerWidth/2 - blob3X) * 0.06 * speedFactor;
+        blob3Y += (window.innerHeight - mouseY - window.innerHeight/2 - blob3Y) * 0.06 * speedFactor;
 
         // 应用坐标
         if(blob1) blob1.style.transform = `translate(${blob1X}px, ${blob1Y}px)`;
         if(blob2) blob2.style.transform = `translate(${blob2X}px, ${blob2Y}px)`;
         if(blob3) blob3.style.transform = `translate(${blob3X}px, ${blob3Y}px)`;
 
-        requestAnimationFrame(animateBlobs); // 下一帧继续
+        requestAnimationFrame(animateBlobs); 
     }
 
     // 启动动画
@@ -122,10 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ========================================================================
-   【关键步骤】挂载全局函数 (Expose to Window)
-   这就是为什么之前的代码“点不动”的原因：
-   HTML onclick 只能看到 window 上的函数，看不到 module 内部的函数。
-   所以我们需要手动把它们挂载出去。
+   挂载全局函数 (Expose to Window)
+   确保 HTML 中的 onclick 能调用到这些模块化函数
    ======================================================================== */
 
 // 导航
@@ -134,12 +155,10 @@ window.scrollToSection = UI.scrollToSection;
 
 // 作品交互
 window.expandProjects = UI.expandProjects;
-// 注意：openModal 需要参数，这里直接挂载函数引用即可
 window.openModal = UI.openModal;
 window.closeModal = UI.closeModal;
 
 // 文档与简历
-// 这里用了一个小技巧：点击按钮时，实时去取最新的 personalInfo 数据传进去
 window.openDocList = () => UI.openDocList(getInfo().documents);
 window.closeDocList = UI.closeDocList;
 window.openPdfPreview = UI.openPdfPreview;
