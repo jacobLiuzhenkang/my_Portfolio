@@ -26,7 +26,7 @@
 3.  **人工精修 (Post-Processing)：** 对 AI 生成图进行矢量化处理与细节修复，确保其符合印刷与大尺寸展示的精度要求。
 
 > **Prompt 示例：**
-> "A charming 3D animated-style character design features an anthropomorphic white dolphin... wearing a dark green apron... holds a matte black gooseneck kettle... soft and studio-like lighting." [cite: 1011, 1012]
+> "A charming 3D animated-style character design features an anthropomorphic white dolphin... wearing a dark green apron... holds a matte black gooseneck kettle... soft and studio-like lighting."
 
 ![AI生成过程展示](/images/ip/2.jpg)
 
