@@ -9,7 +9,7 @@ let isMenuOpen = false;
 export function toggleMobileMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileOverlay = document.getElementById('mobile-overlay');
-    
+
     isMenuOpen = !isMenuOpen;
 
     if (isMenuOpen) {
@@ -34,7 +34,7 @@ export function scrollToSection(id) {
     const element = document.getElementById(id);
     if (element) {
         // 增加偏移量，防止标题被固定导航栏遮挡
-        const yOffset = -80; 
+        const yOffset = -80;
         const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -50,10 +50,9 @@ export function renderProjects(projects, filter = 'all') {
 
     if (!grid) return;
 
-    grid.innerHTML = ''; 
+    grid.innerHTML = '';
     // 基础 Grid 配置：移动端单列，PC端多列
-    grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-4 md:px-0 hover-group bg-transparent";
-
+    grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 hover-group bg-transparent";
     const filtered = filter === 'all' ? projects : projects.filter(p => p.type === filter);
 
     filtered.forEach(p => {
@@ -69,7 +68,7 @@ export function renderProjects(projects, filter = 'all') {
         if (p.featured && filter === 'all') {
             card.className = 'project-card col-span-1 md:col-span-2 lg:col-span-3 group cursor-pointer animate-fade-in-up';
             card.onclick = () => openModal(p);
-            
+
             card.innerHTML = `
                 <div class="relative rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#111] md:bg-white/5 backdrop-blur-2xl shadow-2xl hover:border-white/20 transition-colors">
                     <div class="flex flex-col lg:grid lg:grid-cols-12 gap-0">
@@ -90,19 +89,19 @@ export function renderProjects(projects, filter = 'all') {
                         </div>
                     </div>
                 </div>`;
-        } 
+        }
         // --- 情况 B：普通卡片 (Standard) ---
         else {
             card.className = 'project-card group relative h-[320px] md:h-[380px] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden cursor-pointer border border-white/10 bg-[#111] animate-fade-in-up';
             card.onclick = () => openModal(p);
-            
+
             card.innerHTML = `
                 <div class="absolute inset-0 overflow-hidden bg-[#111] transform transition-transform">${bgContent}</div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 md:opacity-60 group-hover:opacity-90 transition-opacity"></div>
                 
                 <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 transform translate-y-0 md:translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                      <div class="flex gap-2 mb-3 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 md:delay-100">
-                        ${p.tags.slice(0,2).map(t => `<span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-1 rounded text-white backdrop-blur-sm">${t}</span>`).join('')}
+                        ${p.tags.slice(0, 2).map(t => `<span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-1 rounded text-white backdrop-blur-sm">${t}</span>`).join('')}
                      </div>
                      <h3 class="text-xl md:text-2xl font-bold mb-1 flex items-center gap-2 leading-tight">${p.title}</h3>
                      <p class="text-white/60 text-xs md:text-sm line-clamp-1">${p.subtitle}</p>
@@ -121,7 +120,7 @@ function updateExpandState(wrapper, overlay, count) {
     // 恢复默认折叠高度
     wrapper.classList.add('max-h-[1100px]');
     wrapper.classList.add('[mask-image:linear-gradient(to_bottom,black_70%,transparent)]');
-    
+
     // 如果项目少，自动展开
     if (count <= 4) {
         overlay.classList.add('hidden');
@@ -136,10 +135,17 @@ export function expandProjects() {
     const wrapper = document.getElementById('projects-wrapper');
     const overlay = document.getElementById('projects-overlay');
     wrapper.classList.remove('max-h-[1100px]');
-    // 设置为真实高度，实现平滑过渡
+
     wrapper.style.maxHeight = wrapper.scrollHeight + "px";
     wrapper.classList.remove('[mask-image:linear-gradient(to_bottom,black_70%,transparent)]');
     overlay.classList.add('hidden');
+
+    // 【新增】等待 1秒（动画结束后），将 overflow 设为 visible
+    // 这样展开后，卡片缩放就完全自由了，绝对不会被裁切
+    setTimeout(() => {
+        wrapper.classList.remove('overflow-hidden');
+        wrapper.classList.add('overflow-visible');
+    }, 1000);
 }
 
 /* ========================================================================
@@ -214,27 +220,27 @@ export function openModal(project) {
     }
 
     // 3. 打开弹窗动画
-    modalOverlay.style.cssText = ''; 
+    modalOverlay.style.cssText = '';
     modalOverlay.classList.remove('invisible', 'pointer-events-none', 'opacity-0');
-    
+
     // 强制重排 (Reflow)
-    void modalOverlay.offsetWidth; 
+    void modalOverlay.offsetWidth;
 
     // Slide Up 动画核心
     modalContent.classList.remove('translate-y-full');
-    
+
     document.body.style.overflow = 'hidden';
-    
+
     if (window.lucide) window.lucide.createIcons();
 }
 
 export function closeModal() {
     const modalOverlay = document.getElementById('modal-overlay');
     const modalContent = document.getElementById('modal-content');
-    
+
     // Slide Down 动画
     modalContent.classList.add('translate-y-full');
-    
+
     // 延迟隐藏遮罩，等待 Panel 滑下去
     setTimeout(() => {
         modalOverlay.classList.add('opacity-0');
@@ -252,11 +258,11 @@ export function closeModal() {
 export function openDocList(documents) {
     const modal = document.getElementById('doc-list-modal');
     const container = document.getElementById('doc-list-container');
-    
+
     if (!modal || !container) return;
     container.innerHTML = '';
-    
-    if(documents && documents.length > 0) {
+
+    if (documents && documents.length > 0) {
         documents.forEach(doc => {
             const item = document.createElement('button');
             item.className = "w-full text-left p-4 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/15 transition-colors flex items-center gap-4 group border border-transparent mb-2";
@@ -276,9 +282,9 @@ export function openDocList(documents) {
     } else {
         container.innerHTML = '<div class="text-white/30 text-center py-4">No documents available</div>';
     }
-    
+
     if (window.lucide) window.lucide.createIcons();
-    
+
     modal.classList.remove('invisible', 'pointer-events-none', 'opacity-0');
     // 弹起效果
     const panel = modal.children[0];
@@ -288,10 +294,10 @@ export function openDocList(documents) {
 export function closeDocList() {
     const modal = document.getElementById('doc-list-modal');
     const panel = modal.children[0];
-    
+
     panel.classList.add('scale-95', 'translate-y-20'); // 回缩下沉
     modal.classList.add('opacity-0');
-    
+
     setTimeout(() => {
         modal.classList.add('invisible', 'pointer-events-none');
     }, 300);
@@ -303,7 +309,7 @@ export function openPdfPreview(doc) {
     document.getElementById('pdf-title').innerText = doc.name;
     document.getElementById('pdf-frame').src = doc.file;
     document.getElementById('pdf-download-btn').href = doc.file;
-    
+
     modal.classList.remove('invisible', 'pointer-events-none', 'opacity-0');
     document.body.style.overflow = 'hidden';
 }
@@ -311,14 +317,14 @@ export function openPdfPreview(doc) {
 export function closePdfPreview() {
     const modal = document.getElementById('pdf-preview-modal');
     const frame = document.getElementById('pdf-frame');
-    
+
     modal.classList.add('opacity-0', 'pointer-events-none');
     document.body.style.overflow = '';
-    
+
     setTimeout(() => {
         if (modal.classList.contains('opacity-0')) {
             modal.classList.add('invisible');
-            if(frame) frame.src = '';
+            if (frame) frame.src = '';
         }
     }, 300);
 }
@@ -340,7 +346,7 @@ export function closeWechatModal() {
     const modal = document.getElementById('wechat-modal');
     modal.children[0].classList.add('scale-95');
     modal.classList.add('opacity-0');
-    
+
     setTimeout(() => {
         modal.classList.add('invisible', 'pointer-events-none');
     }, 300);
