@@ -94,7 +94,7 @@ window.projects = [
         title: '夏商 IP 形象设计',
         subtitle: '3D 角色设计 · AIGC 辅助',
         tags: ['3D Character', 'IP Design', 'Midjourney'],
-        coverImage: '', // 暂时没图，会显示下面的渐变色
+        coverImage: './images/ip/001.jpg', // 暂时没图，会显示下面的渐变色
         color: 'from-emerald-500 to-teal-500',
         featured: false,
         demoUrl: '',
@@ -109,7 +109,7 @@ window.projects = [
         title: '商业平面设计合集',
         subtitle: 'Logo 设计 · 品牌 VI · 广告创意',
         tags: ['Logo Design', 'Poster', 'Typography'],
-        coverImage: '', // 建议截取 PDF 第31页或33页作为封面
+        coverImage: './images/other/001.jpg', // 建议截取 PDF 第31页或33页作为封面
         color: 'from-gray-700 to-gray-900',
         featured: false,
         demoUrl: '',
