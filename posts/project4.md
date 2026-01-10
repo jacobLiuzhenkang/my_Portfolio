@@ -10,8 +10,8 @@
 ### 02. 设计理念与原型
 **“根植沿海，守护新鲜”**
 
-* [cite_start]**原型选择：** 选取素有“海上大熊猫”之称的**中华白海豚**为原型 [cite: 1003][cite_start]。这不仅呼应了厦门“鹭岛/海滨”的地域特色，更契合夏商集团深耕沿海、服务民生的品牌基因 [cite: 1005]。
-* [cite_start]**性格设定：** 我们将白海豚设定为一位圆润可爱的“社区好邻居” [cite: 1007]。它身穿绿色围裙，不仅是新鲜食材的搬运工，更是陪伴用户一日三餐的温暖守护者。
+* **原型选择：** 选取素有“海上大熊猫”之称的**中华白海豚**为原型。这不仅呼应了厦门“鹭岛/海滨”的地域特色，更契合夏商集团深耕沿海、服务民生的品牌基因。
+* **性格设定：** 我们将白海豚设定为一位圆润可爱的“社区好邻居”。它身穿绿色围裙，不仅是新鲜食材的搬运工，更是陪伴用户一日三餐的温暖守护者。
 * **品牌联想：** 传递“新鲜、亲切、值得信赖”的核心价值，消除国企品牌的距离感。
 
 ![IP设计理念与原型](/images/ip/1.jpg)
@@ -21,12 +21,12 @@
 ### 03. AIGC 工作流 (AI Workflow)
 利用 AI 技术，我们实现了从文本到 3D 视觉的高效转化：
 
-1.  [cite_start]**Prompt 工程 (ChatGPT)：** 利用 ChatGPT 辅助生成精准的绘画提示词，描述角色的材质（Matte texture）、光影（Soft studio lighting）及动作细节 [cite: 1011, 1015]。
-2.  [cite_start]**图像生成 (Midjourney)：** 生成拟人化的白海豚形象，通过多次迭代（Vary Region），精确控制“手冲咖啡”、“穿戴围裙”等具体动作与服饰细节 [cite: 1012, 1013]。
+1. **Prompt 工程 (ChatGPT)：** 利用 ChatGPT 辅助生成精准的绘画提示词，描述角色的材质（Matte texture）、光影（Soft studio lighting）及动作细节。
+2. **图像生成 (Midjourney)：** 生成拟人化的白海豚形象，通过多次迭代（Vary Region），精确控制“手冲咖啡”、“穿戴围裙”等具体动作与服饰细节。
 3.  **人工精修 (Post-Processing)：** 对 AI 生成图进行矢量化处理与细节修复，确保其符合印刷与大尺寸展示的精度要求。
 
 > **Prompt 示例：**
-> [cite_start]"A charming 3D animated-style character design features an anthropomorphic white dolphin... wearing a dark green apron... holds a matte black gooseneck kettle... soft and studio-like lighting." [cite: 1011, 1012]
+> "A charming 3D animated-style character design features an anthropomorphic white dolphin... wearing a dark green apron... holds a matte black gooseneck kettle... soft and studio-like lighting." [cite: 1011, 1012]
 
 ![AI生成过程展示](/images/ip/2.jpg)
 
@@ -35,9 +35,9 @@
 ### 04. 视觉延展与落地应用
 IP 形象被广泛应用于“夏商咖啡”的线下门店与物料中，构建了统一的品牌视觉识别系统：
 
-* [cite_start]**包装设计：** 咖啡纸杯、手提袋、热饮杯套，让 IP 形象成为行走的广告牌 [cite: 1028, 1030]。
-* [cite_start]**周边物料：** 定制冰箱贴、贴纸等文创周边，深受年轻消费者喜爱 [cite: 1028]。
-* [cite_start]**营销活动：** 结合“大众点评打卡免费喝茶”等活动，IP 形象作为视觉主体，有效提升了活动的点击率与参与度 [cite: 1131]。
+* **包装设计：** 咖啡纸杯、手提袋、热饮杯套，让 IP 形象成为行走的广告牌。
+* **周边物料：** 定制冰箱贴、贴纸等文创周边，深受年轻消费者喜爱。
+* **营销活动：** 结合“大众点评打卡免费喝茶”等活动，IP 形象作为视觉主体，有效提升了活动的点击率与参与度。
 
 ![咖啡周边应用展示](/images/ip/3.jpg)
 
