@@ -67,7 +67,7 @@ window.projects = [
         coverImage: './images/memoring/memoring-project.webp',
         color: 'from-purple-600 to-pink-500',
         featured: false, // 设为 false，则以标准网格大小显示
-        demoUrl: '',
+        demoUrl: 'https://mastergo.com/goto/PK8cJYku?page_id=M&layer_id=83:1118&proto=1&shared=true',
         description: '拟物化风格的录音管理工具，连接智能硬件与用户情感。',
         markdownFile: './posts/project2.md'
     },

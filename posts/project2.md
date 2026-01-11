@@ -61,21 +61,5 @@
 
 ---
 
-### 06. 交互演示
-您可以查看下方的交互原型，体验黑胶唱片的播放动效与 AI 转写的滚动交互。
-
-<div class="w-full relative aspect-[16/9] rounded-xl overflow-hidden border border-white/10 shadow-2xl my-8 group">
-    <div class="absolute inset-0 flex items-center justify-center bg-[#1a1a1a] -z-10">
-        <span class="text-white/30 text-sm animate-pulse">Loading Prototype...</span>
-    </div>
-    <iframe 
-        class="w-full h-full" 
-        src="https://mastergo.com/share/YOUR_LINK_HERE?ui=0&presentation=1" 
-        allowfullscreen>
-    </iframe>
-</div>
-
----
-
-### 07. 项目复盘
+### 06. 项目复盘
 MemoRing 不仅仅是一个 App，它是智能硬件的“灵魂伴侣”。通过引入拟物化设计与 AI 赋能，我们成功将一个单一的录音工具，转化为了具有情感温度的个人知识库。项目上线后，用户对“黑胶播放”的喜爱度超出了预期，证明了在硬核科技产品中注入人文情怀的设计价值。

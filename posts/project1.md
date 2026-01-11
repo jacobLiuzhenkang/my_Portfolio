@@ -56,21 +56,5 @@
 
 ---
 
-### 06. 交互原型体验
-您可以直接在下方操作，体验从“浏览商品”到“加入购物车”的完整交互流程。
-
-<div class="w-full relative aspect-[16/9] rounded-xl overflow-hidden border border-white/10 shadow-2xl my-8 group">
-    <div class="absolute inset-0 flex items-center justify-center bg-[#1a1a1a] -z-10">
-        <span class="text-white/30 text-sm animate-pulse">Loading Prototype...</span>
-    </div>
-    <iframe 
-        class="w-full h-full" 
-        src="https://mastergo.com/share/YOUR_LINK_HERE?ui=0&presentation=1" 
-        allowfullscreen>
-    </iframe>
-</div>
-
----
-
-### 07. 项目复盘
+### 06. 项目复盘
 新版夏商到家上线后，凭借清晰的视觉层级与流畅的交互体验，有效提升了用户在生鲜品类的转化率，并成功通过“夏商咖啡”等子业务带动了年轻用户群体的增长。这不仅是一次视觉升级，更是传统国企在数字化浪潮中的一次有力发声。
