@@ -13,7 +13,7 @@ window.personalInfo = {
     title: "UI/UX Designer",
     headline: "Interface. Identity. Interaction.", // 首页大标题 (Headline / Slogan)
     subHeadline: "以 UI/UX 为核心，融合多维视觉语言，探索商业与美学的最佳平衡点。", // 首页副标题 (Sub-headline)
-    wechatQr: "./images/wechat/LK_wechat.jpg", // 微信二维码图片路径
+    wechatQr: "./images/wechat/LK_wechat.webp", // 微信二维码图片路径
 
     // 关于我 (About) 部分的介绍文案
     aboutText: "在 6 年的设计旅程中，平面设计的积淀赋予了我对色彩与构图的敏锐直觉，而近 3 年的 UI/UX 实践则教会我用逻辑构建秩序。\n这种双重背景让我明白：好的界面设计，是品牌精神的无声翻译。我不仅关注每一个交互控件的精准呈现，更在意如何在数字端完美还原品牌的独特性格。\n我是设计的执行者，也是新技术的拥抱者，致力于利用 AIGC 探索理性商业逻辑与感性视觉语言的最佳平衡。",
@@ -49,7 +49,7 @@ window.projects = [
         title: '夏商到家视觉升级',
         subtitle: '移动端 · C端产品设计 · 小程序',
         tags: ['Mobile design', 'Fresh food mall', 'Visual upgrade'], // 标签 (Labels)
-        coverImage: './images/seashine/seashine-project.jpg', // 封面图路径 (Cover)
+        coverImage: './images/seashine/seashine-project.webp', // 封面图路径 (Cover)
         color: 'from-blue-600 to-indigo-600', // 如果没封面图，显示的渐变背景色
         featured: true, // 【重要】设为 true，这个作品就会占据一整行，变大展示 (Featured Card)
         demoUrl: '', // 如果有 MasterGo 或 Figma 演示链接，填在这里，详情页会出现“试玩”按钮
@@ -64,7 +64,7 @@ window.projects = [
         title: 'MemoRing 智能戒指',
         subtitle: 'iOS / Android · 智能硬件配套',
         tags: ['App Design', 'iOS', 'AIoT'],
-        coverImage: './images/memoring/memoring-project.jpg',
+        coverImage: './images/memoring/memoring-project.webp',
         color: 'from-purple-600 to-pink-500',
         featured: false, // 设为 false，则以标准网格大小显示
         demoUrl: '',
@@ -79,7 +79,7 @@ window.projects = [
         title: '食谱社区 0-1 项目',
         subtitle: 'Mobile app · C端',
         tags: ['Mobile design', 'Recipe', 'Social'],
-        coverImage: './images/shike/shike.jpg',
+        coverImage: './images/shike/shike.webp',
         color: 'from-orange-400 to-yellow-500',
         featured: false,
         demoUrl: '',
@@ -94,7 +94,7 @@ window.projects = [
         title: '夏商 IP 形象设计',
         subtitle: '3D 角色设计 · AIGC 辅助',
         tags: ['3D Character', 'IP Design', 'Midjourney'],
-        coverImage: './images/ip/001.png', // 暂时没图，会显示下面的渐变色
+        coverImage: './images/ip/001.webp', // 暂时没图，会显示下面的渐变色
         color: 'from-emerald-500 to-teal-500',
         featured: false,
         demoUrl: '',
@@ -109,7 +109,7 @@ window.projects = [
         title: '商业平面设计合集',
         subtitle: 'Logo 设计 · 品牌 VI · 广告创意',
         tags: ['Logo Design', 'Poster', 'Typography'],
-        coverImage: './images/other/001.png', // 建议截取 PDF 第31页或33页作为封面
+        coverImage: './images/other/001.webp', // 建议截取 PDF 第31页或33页作为封面
         color: 'from-gray-700 to-gray-900',
         featured: false,
         demoUrl: '',
