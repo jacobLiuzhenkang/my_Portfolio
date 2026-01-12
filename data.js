@@ -52,7 +52,7 @@ window.projects = [
         coverImage: './images/seashine/seashine-project.webp', // 封面图路径 (Cover)
         color: 'from-blue-600 to-indigo-600', // 如果没封面图，显示的渐变背景色
         featured: true, // 【重要】设为 true，这个作品就会占据一整行，变大展示 (Featured Card)
-        demoUrl: '', // 如果有 MasterGo 或 Figma 演示链接，填在这里，详情页会出现“试玩”按钮
+        demoUrl: 'https://mastergo.com/goto/PLmm4r8s?page_id=M&layer_id=260:9229&proto=1&shared=true', // 如果有 MasterGo 或 Figma 演示链接，填在这里，详情页会出现“试玩”按钮
         description: '夏商到家小程序改版：重塑视觉规范与 O2O 体验，助力传统零售品牌的年轻化转型。',
         markdownFile: './posts/project1.md' // 详情页的内容来源 (Markdown 文档)
     },
