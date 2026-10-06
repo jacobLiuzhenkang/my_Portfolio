@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="VIFORM AI 测试阶段隐私说明：公开介绍页、本地原型与拟申请的 Pinterest 只读连接。">
+    <title>测试阶段隐私说明 · VIFORM AI</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="legal-page">
+    <header class="site-header shell">
+      <a class="brand" href="./" aria-label="返回 VIFORM AI 介绍页">
+        <img src="assets/viform-logo.png" alt="VIFORM AI" width="172" height="42">
+      </a>
+      <nav class="site-nav" aria-label="页面导航">
+        <a href="./">产品介绍</a>
+        <a href="privacy.html" aria-current="page">隐私说明</a>
+      </nav>
+    </header>
+
+    <main class="legal-content" id="main-content">
+      <header class="legal-header">
+        <p class="status-badge">测试阶段</p>
+        <h1>隐私说明</h1>
+        <p class="legal-summary">清楚说明现在处理什么，以及哪些能力尚未开放。</p>
+        <p class="legal-meta">运营者：liuzhenkang · 更新日期：2026 年 10 月 6 日</p>
+      </header>
+
+      <section class="legal-section" aria-labelledby="scope">
+        <h2 id="scope">01 · 适用范围与当前状态</h2>
+        <p>本说明介绍 VIFORM AI 公开产品介绍页，以及由运营者管理的本地测试原型。VIFORM AI 当前处于开发阶段，尚未向公众开放多用户创作服务。公开介绍页不提供注册、登录、文件上传或支付。</p>
+        <p>Pinterest 连接尚未配置有效应用凭据，尚未完成平台审批；本地界面与接口已经准备，真实账号连接尚未开放。下文单独标明连接开放后的预定处理方式，不代表目前已读取访客的 Pinterest 账号。</p>
+        <p class="legal-note">正式开放客户服务前，将按实际部署、账号体系、供应商和数据处理方式更新本说明，并提供可用的隐私联系入口。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="site">
+        <h2 id="site">02 · 浏览公开介绍页</h2>
+        <p>此介绍页没有信息提交表单，不设置用于用户分析或广告追踪的脚本，也不设置 VIFORM 登录 Cookie。页面资源随网页加载。</p>
+        <p>为提供网页和保障运行，实际托管服务可能处理 IP 地址、浏览器信息、请求时间、访问路径和必要的运行或安全日志。本页通过运营者现有的 Vercel 网站托管。托管服务的网络和安全日志按其实际规则处理，本说明不承诺基础设施不产生日志或统一的删除期限。</p>
+        <p>你主动打开 Pinterest 或运营者网站等外部链接时，会访问另一个网站，其自身的隐私政策适用。此介绍页不会因此自动取得你在其他网站的登录状态或账号授权。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="prototype">
+        <h2 id="prototype">03 · 本地原型中的内容</h2>
+        <p>测试操作者可以在本机原型中输入创作需求、上传参考文件，保存项目、对话、画板、笔记和作品。这些内容用于展示和测试创作流程，由测试环境保存和管理；不会因访问本介绍页而产生或提交。</p>
+        <p>当前原型没有完整的生产用户身份与多客户项目隔离机制，也未承诺适用于公开客户服务的统一保留期限。请不要将它用于对外收集客户资料。本地内容的删除和恢复以已实现的功能为准；界面中的删除不等同于从所有备份中立即、永久清除。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="pinterest">
+        <h2 id="pinterest">04 · Pinterest 连接开放后</h2>
+        <p><strong>由用户主动授权。</strong>用户选择连接自己的 Pinterest 账号后，将前往 Pinterest 完成 OAuth 授权。VIFORM 不要求用户向 VIFORM 提交 Pinterest 密码、验证码或浏览器会话 Cookie。最终授权范围以 Pinterest 授权页面及实际批准的权限为准。</p>
+        <p><strong>首期为只读浏览。</strong>拟申请的基本范围是查看授权账号及其可访问的 Pins 和 Boards，用于设计灵感浏览。接口可能返回账号名称、头像、素材标题、描述、来源链接、预览地址和媒体尺寸等资料。VIFORM 不以此连接发布、修改或删除用户的 Pinterest 内容。</p>
+        <p><strong>令牌由服务端保护。</strong>当前本地实现把授权令牌保存在服务端独立的加密文件中，并用当前浏览器的连接会话关联账号。它不会把 App Secret、访问令牌或刷新令牌放进公开响应、前端页面或 AI 提示词。该会话仅用于本机测试，并不代替正式客户身份体系。</p>
+        <p><strong>保存与创作使用受到限制。</strong>Pinterest 元数据长期保存和媒体导入在当前实现中默认关闭。用户选择采集时，首期只计划记录来源链接及用户主动填写的标题、笔记和标签；任何保存行为仍须符合平台批准的使用范围。</p>
+        <p>未经所需的平台许可及内容使用权确认，不开放 Pinterest 图片或视频下载、持久保存及向第三方 AI 创作服务传送的能力。来源链接不会被当作 AI 已收到原图的证明。Pinterest API 资料不用于训练、微调或改进 AI 模型。</p>
+        <p><strong>断开连接。</strong>本地实现中的断开操作会停止继续使用该连接读取资源，清除该连接在 VIFORM 当前存储中的授权凭据。它不会退出用户的 Pinterest 网站账号，也不自动删除已有的 VIFORM 画板、笔记或作品。需要在 Pinterest 端撤销授权时，请使用 Pinterest 自身的授权管理；已保存内容及备份的后续处理须按平台要求和实际保存状态落实。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="sharing">
+        <h2 id="sharing">05 · 对外提供与安全</h2>
+        <p>目前的公开介绍页不向第三方 AI 服务发送访客内容。Pinterest 连接开放后，必要的授权和资源请求会发送至 Pinterest；媒体创作导入仍受上一节所述条件限制。尚未确定的模型供应商、支付服务或正式客户数据库不在本说明中作已接入陈述。</p>
+        <p>当前实现采用服务端令牌加密和访问范围检查。安全措施不能保证所有风险都被消除，也不代表产品已取得任何安全认证。正式服务需要进一步落实客户身份隔离、访问控制、数据保留及删除流程。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="choices">
+        <h2 id="choices">06 · 选择与内容管理</h2>
+        <p>介绍页访客可以不打开外部链接。本地测试操作者可以选择不连接 Pinterest，或在连接开放后断开；不会因此失去浏览产品介绍页的权限。</p>
+        <p>当前开发测试由运营者 liuzhenkang 在本机进行，尚未向公众提供 VIFORM 注册、账号连接或内容提交。测试操作者可使用已实现的内容管理和恢复功能处理本地资料。</p>
+        <p class="legal-note">本阶段暂不公开联系入口。面向真实客户的数据处理规则与隐私请求渠道尚未确定；这些事项明确并更新本说明前，不开放客户账号及内容处理服务。本说明限定于当前开发测试阶段，不表示已具备正式客户服务的完整隐私处理流程。</p>
+        <p>VIFORM 当前测试项目面向成年设计使用者，不面向未满 13 岁的儿童提供 Pinterest 接入。正式服务开放前，还会明确适用的年龄范围与其他用户规则。</p>
+      </section>
+
+      <section class="legal-section" aria-labelledby="updates">
+        <h2 id="updates">07 · 更新与第三方说明</h2>
+        <p>产品开放范围、托管方式或数据处理方式变更时，应同步更新本说明。未来如果增加 Pinterest 媒体导入、AI 创作引用或多用户服务，将先说明实际处理范围，再开放相关能力。本说明不表示已获得 Pinterest 审批或合作资格。</p>
+        <p>Pinterest 独立处理其服务内的数据。你可以查看 <a href="https://policy.pinterest.com/en/privacy-policy" target="_blank" rel="noopener noreferrer">Pinterest 隐私政策</a>及<a href="https://policy.pinterest.com/en/developer-guidelines" target="_blank" rel="noopener noreferrer">开发者规则</a>，了解授权服务的另行要求。</p>
+      </section>
+
+      <section class="legal-section" lang="en" aria-labelledby="english">
+        <h2 id="english">English overview</h2>
+        <p>VIFORM AI is a development-stage creative workspace operated by liuzhenkang. This public information page has no registration, upload, payment or analytics features. Hosting may require network and security logs.</p>
+        <p>The prototype runs locally. Pinterest access is not yet enabled. The planned integration uses user-authorized OAuth and read-only access to permitted Pins and Boards. Tokens are held in encrypted server-side files. Pinterest metadata storage and media import are disabled by default. Pinterest API data is not used to train or improve AI models. Disconnecting removes the local connection credentials but does not automatically delete project content.</p>
+        <p>This is a development-stage privacy notice updated on October 6, 2026. No public contact channel is provided at this stage. Customer account and content-processing services will remain unavailable until the relevant privacy procedures and request channels are established and this notice is updated.</p>
+      </section>
+      <a class="legal-back" href="./">← 返回产品介绍</a>
+    </main>
+
+    <footer class="site-footer shell">
+      <span>VIFORM AI · liuzhenkang</span>
+      <span>开发测试阶段</span>
+    </footer>
+  </body>
+</html>
