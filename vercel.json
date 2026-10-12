@@ -1,0 +1,19 @@
+{
+  "redirects": [
+    {
+      "source": "/viform",
+      "destination": "https://viform.liuzhenkang.cn/",
+      "permanent": false
+    },
+    {
+      "source": "/viform/",
+      "destination": "https://viform.liuzhenkang.cn/",
+      "permanent": false
+    },
+    {
+      "source": "/viform/privacy.html",
+      "destination": "https://viform.liuzhenkang.cn/privacy/",
+      "permanent": false
+    }
+  ]
+}
