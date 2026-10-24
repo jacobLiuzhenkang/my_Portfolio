@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router";
+import * as NavigationDialog from "@radix-ui/react-dialog";
 import { useSceneMotion } from "@/hooks/use-scene-motion";
 
 export type ProjectView = {
@@ -92,72 +93,146 @@ export function PortfolioHeader({ active }: { active: "work" | "growth" }) {
   const { enabled, systemReduced, toggle } = useSceneMotion();
   useEffect(() => {
     const close = () => setMenu(false);
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+    const desktop = window.matchMedia("(min-width: 761px)");
+    const resize = () => {
+      if (desktop.matches) close();
     };
     window.addEventListener("popstate", close);
-    window.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", resize);
     return () => {
       window.removeEventListener("popstate", close);
-      window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", resize);
     };
   }, []);
+  useEffect(() => {
+    if (!menu) return;
+    document.body.classList.add("dialog-open");
+    return () => document.body.classList.remove("dialog-open");
+  }, [menu]);
 
   return (
-    <header className="pf-header">
-      <Link className="pf-brand" to="/" aria-label="刘振康作品集首页">
-        <span>LZ</span>
-        <i>®</i>
-        <small>
-          LIU ZHENKANG
-          <br />
-          PRODUCT × DESIGN × AI
-        </small>
-      </Link>
-      <nav
-        className={menu ? "pf-nav is-open" : "pf-nav"}
-        aria-label="公开作品导航"
-        onClick={() => setMenu(false)}
-      >
-        <Link className={active === "work" ? "active" : ""} to="/#work">
-          <span>01</span> 精选作品 <small>SELECTED WORK</small>
+    <NavigationDialog.Root open={menu} onOpenChange={setMenu}>
+      <header className="pf-header">
+        <Link className="pf-brand" to="/" aria-label="刘振康作品集首页">
+          <span>LZ</span>
+          <i>®</i>
+          <small>
+            LIU ZHENKANG
+            <br />
+            PRODUCT × DESIGN × AI
+          </small>
         </Link>
-        <Link className={active === "growth" ? "active" : ""} to="/growth">
-          <span>02</span> 我的成长 <small>MY WORK LIFE</small>
-        </Link>
-        <a href={active === "work" ? "#contact" : "/#contact"}>
-          <span>03</span> 联系我 <small>CONTACT</small>
-        </a>
-      </nav>
-      <button
-        className="pf-motion-toggle"
-        onClick={toggle}
-        disabled={systemReduced}
-        aria-pressed={!enabled}
-        aria-label={
-          systemReduced
-            ? "静态显示，遵循系统设置"
-            : enabled
-              ? "暂停动效"
-              : "开启动效"
-        }
-        title={systemReduced ? "已遵循系统的减少动态效果设置" : undefined}
-      >
-        {enabled ? <Pause size={14} /> : <Play size={14} />}
-        <span>
-          {systemReduced ? "静态显示" : enabled ? "暂停动效" : "开启动效"}
-        </span>
-      </button>
-      <button
-        className="pf-menu"
-        onClick={() => setMenu(!menu)}
-        aria-expanded={menu}
-        aria-label={menu ? "关闭导航" : "打开导航"}
-      >
-        {menu ? <X /> : <Menu />}
-      </button>
-      <ScrollTelemetry />
-    </header>
+        <nav className="pf-nav" aria-label="公开作品导航">
+          <Link className={active === "work" ? "active" : ""} to="/#work">
+            <span>01</span> 精选作品 <small>SELECTED WORK</small>
+          </Link>
+          <Link className={active === "growth" ? "active" : ""} to="/growth">
+            <span>02</span> 我的成长 <small>MY WORK LIFE</small>
+          </Link>
+          <a href={active === "work" ? "#contact" : "/#contact"}>
+            <span>03</span> 联系我 <small>CONTACT</small>
+          </a>
+        </nav>
+        <button
+          className="pf-motion-toggle"
+          onClick={toggle}
+          disabled={systemReduced}
+          aria-pressed={!enabled}
+          aria-label={
+            systemReduced
+              ? "静态显示，遵循系统设置"
+              : enabled
+                ? "暂停动效"
+                : "开启动效"
+          }
+          title={systemReduced ? "已遵循系统的减少动态效果设置" : undefined}
+        >
+          {enabled ? <Pause size={14} /> : <Play size={14} />}
+          <span>
+            {systemReduced ? "静态显示" : enabled ? "暂停动效" : "开启动效"}
+          </span>
+        </button>
+        <NavigationDialog.Trigger asChild>
+          <button className="pf-menu" aria-label="打开导航">
+            <Menu size={28} aria-hidden="true" />
+          </button>
+        </NavigationDialog.Trigger>
+        <ScrollTelemetry />
+      </header>
+      <NavigationDialog.Portal>
+        <NavigationDialog.Overlay
+          className="pf-mobile-overlay"
+          data-motion={enabled ? "running" : "static"}
+        />
+        <NavigationDialog.Content
+          className="pf-mobile-drawer"
+          data-lenis-prevent
+          data-motion={enabled ? "running" : "static"}
+        >
+          <div className="pf-drawer-top">
+            <NavigationDialog.Title className="pf-drawer-title">
+              站点导航
+            </NavigationDialog.Title>
+            <NavigationDialog.Close
+              className="pf-drawer-close"
+              aria-label="关闭导航"
+            >
+              <X size={26} aria-hidden="true" />
+            </NavigationDialog.Close>
+          </div>
+          <NavigationDialog.Description className="sr-only">
+            查看精选作品、职业成长与联系方式。
+          </NavigationDialog.Description>
+          <nav className="pf-drawer-links" aria-label="手机导航">
+            <Link
+              to="/#work"
+              className={active === "work" ? "active" : undefined}
+              onClick={() => setMenu(false)}
+            >
+              <span>
+                <strong>精选作品</strong>
+                <small>SELECTED WORK</small>
+              </span>
+              <ArrowUpRight size={27} aria-hidden="true" />
+            </Link>
+            <Link
+              to="/growth"
+              className={active === "growth" ? "active" : undefined}
+              onClick={() => setMenu(false)}
+            >
+              <span>
+                <strong>我的成长</strong>
+                <small>MY WORK LIFE</small>
+              </span>
+              <ArrowUpRight size={27} aria-hidden="true" />
+            </Link>
+            <Link to="/#contact" onClick={() => setMenu(false)}>
+              <span>
+                <strong>联系我</strong>
+                <small>CONTACT</small>
+              </span>
+              <ArrowUpRight size={27} aria-hidden="true" />
+            </Link>
+          </nav>
+          <div className="pf-drawer-footer">
+            <p>刘振康 · AI 产品工程师</p>
+            <button
+              className="pf-drawer-motion"
+              onClick={toggle}
+              disabled={systemReduced}
+              aria-pressed={!enabled}
+            >
+              {enabled ? <Pause size={18} /> : <Play size={18} />}
+              {systemReduced
+                ? "静态显示，遵循系统设置"
+                : enabled
+                  ? "暂停背景动效"
+                  : "开启背景动效"}
+            </button>
+          </div>
+        </NavigationDialog.Content>
+      </NavigationDialog.Portal>
+    </NavigationDialog.Root>
   );
 }
 
