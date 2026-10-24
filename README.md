@@ -43,7 +43,7 @@ docker compose exec -T web npm run build
 
 线上沿用 `/admin` 管理作品、经历、正文和文件。数据库使用 Neon Postgres 免费方案；文件使用 Vercel 私有 Blob，连接项目后通过 OIDC 访问，浏览器不会获得长期读写令牌。上传采用限定 MIME、大小、路径和时效的直传地址，最大 25 MB。
 
-`vercel.json` 指定 Vite 的 `dist/public` 输出及单一 API 入口；原 `/viform` 和隐私链接重定向保留。Production 使用持久数据库；Preview 使用独立数据库分支，文件路径按环境隔离，预览后台不会删除正式文件。
+`vercel.json` 指定 Vite 的 `dist/public` 输出及单一 API 入口。构建将后台打包为 `dist/vercel-handler.mjs`，由 `api/index.mjs` 加载；项目环境变量 `NODEJS_HELPERS=0` 让 Hono 直接读取请求体，正式和预览环境均需配置（[官方说明](https://vercel.com/docs/functions/runtimes/node-js/advanced-node-configuration)）。原 `/viform` 和隐私链接重定向保留。Production 使用持久数据库；Preview 使用独立数据库分支，文件路径按环境隔离，预览后台不会删除正式文件。
 
 环境变量由连接的云资源注入：`DATABASE_URL`、`BLOB_STORE_ID`。生产管理员通过私密部署输入初始化，公开注册入口在生产关闭。不要把连接字符串、密码或私密导入文件提交 Git。部署不会自动运行种子或覆盖后台内容。
 
