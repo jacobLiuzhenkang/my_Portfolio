@@ -1,3 +1,5 @@
+import { usePhoneLayout } from "@/hooks/use-phone-layout";
+import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
 import { useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Braces } from "lucide-react";
 import { Link } from "react-router";
@@ -92,6 +94,7 @@ function ProjectCard({
 }
 
 export default function Home() {
+  const phone = usePhoneLayout();
   const { data, isLoading, error } = trpc.content.public.useQuery();
   const [filter, setFilter] = useState("全部");
   const [selected, setSelected] = useState<ProjectView | null>(null);
@@ -115,6 +118,7 @@ export default function Home() {
     <div className="pf-page pf-home">
       <PortfolioHeader active="work" />
       <main id="main-content">
+        {phone ? <PhoneHomeHero profile={profile} project={featured[0] || projects[0]} /> : (
         <section
           className="pf-hero"
           data-scene="intro"
@@ -165,6 +169,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
         <section
           className="pf-work pf-section"
           id="work"
@@ -242,7 +247,7 @@ export default function Home() {
                 aria-hidden="true"
               />
             </div>
-            <p className="pf-process-intro">{profile.workingStyle}</p>
+            {!phone && <p className="pf-process-intro">{profile.workingStyle}</p>}
             <ol className="pf-process-grid">
               {capabilities.map(([title, text], index) => (
                 <li key={title}>
@@ -252,6 +257,7 @@ export default function Home() {
                 </li>
               ))}
             </ol>
+            {phone && <details className="phone-method-note"><summary>展开协作方式 <ArrowDown size={16}/></summary><p>{profile.workingStyle}</p></details>}
           </div>
         </section>
         <section className="pf-growth-link" data-scene="process">

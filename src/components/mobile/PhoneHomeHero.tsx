@@ -1,0 +1,15 @@
+import { ArrowDown, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Link } from "react-router";
+import { splitPhoneHeadline } from "@contracts/phone-visual";
+import type { ProjectView } from "../PortfolioUI";
+type Profile = { fullName:string; role:string; location:string; headline:string };
+export default function PhoneHomeHero({profile,project}:{profile:Profile;project?:ProjectView}) {
+  const title = splitPhoneHeadline(profile.headline);
+  return <section className="phone-poster" data-scene="intro" aria-labelledby="home-title">
+    <div className="phone-poster-id"><p><strong>{profile.fullName}</strong><span>{profile.role}</span></p><span className="phone-poster-location"><i/>{profile.location}</span></div>
+    <div className="phone-poster-message"><span className="phone-poster-kicker">产品 / 设计 / AI</span><h1 id="home-title">{title.lead&&<span>{title.lead}</span>}<strong>{title.emphasis}</strong></h1><p>需求、设计与 Agent 协作开发，<br/>在具体项目里推进验证与交付。</p></div>
+    <div className="phone-poster-bottom"><div className="phone-poster-actions"><Link className="pf-button pf-button-primary" to="/#work">查看近期作品<ArrowDown size={17}/></Link><Link className="phone-poster-secondary" to="/growth">了解我的经历<ArrowUpRight size={17}/></Link></div>
+    {project&&<Link className="phone-work-peek" to="/#work">{project.coverUrl&&<img src={project.coverUrl} alt={project.title+" 产品画面"} width={160} height={90}/>}<span><small>近期在做</small><strong>{project.title.split(" · ")[0]}</strong></span><ArrowRight size={20}/></Link>}
+    </div>
+  </section>;
+}

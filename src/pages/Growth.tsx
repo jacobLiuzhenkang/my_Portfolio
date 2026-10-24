@@ -1,3 +1,5 @@
+import { usePhoneLayout } from "@/hooks/use-phone-layout";
+import PhoneGrowthHero from "@/components/mobile/PhoneGrowthHero";
 import { ArrowLeft, ArrowUpRight, Download, FileText } from "lucide-react";
 import { Link } from "react-router";
 import {
@@ -31,6 +33,7 @@ const groupMeta = [
 ];
 
 export default function Growth() {
+  const phone = usePhoneLayout();
   const { data, isLoading, error } = trpc.content.public.useQuery();
   if (isLoading) return <PublicLoading />;
   if (error || !data?.profile) return <PublicLoading failed />;
@@ -48,6 +51,7 @@ export default function Growth() {
     <div className="pf-page pf-growth">
       <PortfolioHeader active="growth" />
       <main id="main-content">
+        {phone ? <PhoneGrowthHero profile={profile} current={experiences[0]} /> : (
         <section
           className="pf-growth-hero"
           data-scene="growth"
@@ -88,6 +92,7 @@ export default function Growth() {
             </div>
           </div>
         </section>
+        )}
         <section
           className="pf-experience pf-section"
           id="experience"

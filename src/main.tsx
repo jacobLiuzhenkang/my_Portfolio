@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import './index.css'
 import './portfolio.css'
+import './mobile.css'
 import { TRPCProvider } from "@/providers/trpc"
 import App from './App.tsx'
 
