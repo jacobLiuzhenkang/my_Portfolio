@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && esbuild server/boot.ts --platform=node --bundle --external:sharp --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\" && esbuild server/vercel.ts --platform=node --bundle --format=esm --packages=external --tsconfig=tsconfig.server.json --outfile=dist/vercel-handler.mjs",
+    "build": "vite build && esbuild server/boot.ts --platform=node --bundle --external:sharp --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\" && esbuild server/vercel.ts --platform=node --bundle --format=esm --packages=external --tsconfig=tsconfig.server.json --outfile=dist/vercel-handler.mjs && esbuild db/publish-recent-projects.ts --platform=node --bundle --format=esm --packages=external --outfile=dist/publish-recent-projects.mjs && node dist/publish-recent-projects.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "NODE_ENV=production node dist/boot.js",
