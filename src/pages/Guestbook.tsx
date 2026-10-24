@@ -29,7 +29,7 @@ export default function Guestbook() {
     index: number;
   } | null>(null);
   const identityPending = useRef<Promise<void> | null>(null);
-  const notify = useCallback((text: string) => setNotice(text), []);
+  const notify = useCallback((text: string) => setNotice(/Failed to fetch|Load failed|NetworkError/i.test(text) ? "网络连接失败，内容已保留，请稍后重试。" : text), []);
   const remember = (value: string) => {
     setNickname(value);
     try {
