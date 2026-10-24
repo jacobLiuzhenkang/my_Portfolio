@@ -118,7 +118,7 @@ export default function TechScene() {
     plane.frustumCulled = false;
     scene.add(plane);
 
-    const count = 5200;
+    const count = 16000;
     const positions = new Float32Array(count * 3);
     const seeds = new Float32Array(count);
     let randomSeed = 20261024;
@@ -127,10 +127,12 @@ export default function TechScene() {
       return randomSeed / 4294967296;
     };
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = rand() * 2.6 - 1.3;
+      // Keep a continuous sky across the reading side, with extra stars on the left.
+      positions[i * 3] =
+        rand() < 0.34 ? rand() * 1.3 - 1.3 : rand() * 2.6 - 1.3;
       positions[i * 3 + 1] =
-        rand() < 0.28
-          ? positions[i * 3] * 0.38 + (rand() - 0.5) * 0.5
+        rand() < 0.22
+          ? positions[i * 3] * 0.38 + (rand() - 0.5) * 0.85
           : rand() * 2.6 - 1.3;
       seeds[i] = rand();
     }
@@ -157,22 +159,22 @@ export default function TechScene() {
           p = mix(p, center + normalize(p-center + .001) * (.25 + aSeed * .7), uGather * .24);
           p.x /= uAspect;
           gl_Position = vec4(p, 0.0, 1.0);
-          gl_PointSize = (.85 + depth * 1.9 + step(.985,aSeed) * 4.8) * uPixelRatio;
+          gl_PointSize = (1.05 + depth * 1.75 + step(.99,aSeed) * 4.4) * uPixelRatio;
           vSeed = aSeed;
-          vAlpha = (.48 + .48 * depth) * (.86 + .14 * sin(uPhase * (2.0 + floor(aSeed * 3.0)) + aSeed * 6.28));
-          vAlpha *= mix(.6, 1.0, smoothstep(-.85,.25,p.x)) * (1.0-uReading*.22);
+          vAlpha = (.42 + .5 * depth) * (.88 + .12 * sin(uPhase * (2.0 + floor(aSeed * 3.0)) + aSeed * 6.28));
+          vAlpha *= mix(1.1, 1.0, smoothstep(-.85,.25,p.x)) * (1.0-uReading*.22);
         }`,
       fragmentShader: `precision mediump float; varying float vSeed; varying float vAlpha;
         void main() {
           vec2 p = gl_PointCoord-.5;
           float d = length(p);
-          float bright = step(.985,vSeed);
+          float bright = step(.99,vSeed);
           float core = exp(-d*d*28.0);
-          float halo = exp(-d*d*8.0) * bright * .17;
+          float halo = exp(-d*d*8.0) * bright * .13;
           float rayX = (1.0-smoothstep(.0,.035,abs(p.y))) * (1.0-smoothstep(.08,.5,abs(p.x)));
           float rayY = (1.0-smoothstep(.0,.035,abs(p.x))) * (1.0-smoothstep(.08,.5,abs(p.y)));
-          vec3 color = mix(vec3(.42,.70,.96), vec3(.91,.97,1.0), step(.4,vSeed));
-          color = mix(color, vec3(.86,.96,.48), step(.996,vSeed));
+          vec3 color = mix(vec3(.55,.76,.98), vec3(.94,.98,1.0), step(.4,vSeed));
+          color = mix(color, vec3(.86,.96,.48), step(.9985,vSeed));
           gl_FragColor = vec4(color, (core + halo + (rayX+rayY)*bright*.3)*vAlpha);
         }`,
     });
@@ -223,7 +225,9 @@ export default function TechScene() {
       renderer.setSize(width, height, false);
       uniforms.uAspect.value = width / height;
       uniforms.uPixelRatio.value = renderer.getPixelRatio();
-      geometry.setDrawRange(0, Math.floor((mobile ? 1700 : count) * quality));
+      const visibleStars = Math.floor((mobile ? 1700 : count) * quality);
+      geometry.setDrawRange(0, visibleStars);
+      element.dataset.stars = String(visibleStars);
       scrollDirty = true;
     };
     const draw = (now: number) => {

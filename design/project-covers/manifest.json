@@ -1,0 +1,92 @@
+[
+  {
+    "project": "seashine",
+    "originalCover": "/images/seashine/cover.webp",
+    "normalMaster": "masters/seashine-normal.png",
+    "wideMaster": "masters/seashine-wide.png",
+    "desktopExport": [
+      1600,
+      1000
+    ],
+    "wideExport": [
+      1600,
+      800
+    ],
+    "phoneExport": [
+      1200,
+      900
+    ]
+  },
+  {
+    "project": "memoring",
+    "originalCover": "/images/memoring/cover.webp",
+    "normalMaster": "masters/memoring-normal.png",
+    "wideMaster": "masters/memoring-wide.png",
+    "desktopExport": [
+      1600,
+      1000
+    ],
+    "wideExport": [
+      1600,
+      800
+    ],
+    "phoneExport": [
+      1200,
+      900
+    ]
+  },
+  {
+    "project": "shike",
+    "originalCover": "/images/shike/cover.webp",
+    "normalMaster": "masters/shike-normal.png",
+    "wideMaster": "masters/shike-wide.png",
+    "desktopExport": [
+      1600,
+      1000
+    ],
+    "wideExport": [
+      1600,
+      800
+    ],
+    "phoneExport": [
+      1200,
+      900
+    ]
+  },
+  {
+    "project": "ip",
+    "originalCover": "/images/ip/cover.webp",
+    "normalMaster": "masters/ip-normal.png",
+    "wideMaster": "masters/ip-wide.png",
+    "desktopExport": [
+      1600,
+      1000
+    ],
+    "wideExport": [
+      1600,
+      800
+    ],
+    "phoneExport": [
+      1200,
+      900
+    ]
+  },
+  {
+    "project": "other",
+    "originalCover": "/images/other/cover.webp",
+    "normalMaster": "masters/other-normal.png",
+    "wideMaster": "masters/other-wide.png",
+    "desktopExport": [
+      1600,
+      1000
+    ],
+    "wideExport": [
+      1600,
+      800
+    ],
+    "phoneExport": [
+      1200,
+      900
+    ]
+  }
+]

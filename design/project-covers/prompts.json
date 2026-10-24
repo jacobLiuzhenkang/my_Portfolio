@@ -1,0 +1,62 @@
+{
+  "method": "built-in image_gen",
+  "date": "2026-10-24",
+  "jobs": [
+    {
+      "key": "jacob-wordmark",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/design/branding/jacob/concepts/jacob-flow-v1.png"
+      ],
+      "transparent": true,
+      "prompt": "Edit target: the attached approved Jacob logo concept. Extract only the large primary wordmark \"Jacob\" in the upper half as a production asset on a genuinely transparent background. Remove the entire navy background and remove the small separate J underneath. Preserve EXACTLY the existing chosen letter shapes, proportions, spacing, curved J hook, diagonal green cut at the top of J, and white/lime division; do not redesign or retype the word. Use clean solid warm-white #f0f4f3 and acid-lime #d8fa45 fills, eliminating the subtle paper/lighting texture. Keep crisp smooth edges, no glow, shadow, border, fake checkerboard, or new elements. One horizontal Jacob wordmark only, centered with a small clean transparent margin. This is background removal and preparation of the selected design, not a new logo direction."
+    },
+    {
+      "key": "jacob-symbol",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/design/branding/jacob/concepts/jacob-flow-v1.png"
+      ],
+      "transparent": true,
+      "prompt": "Edit target: the attached approved Jacob logo concept. Extract only the small standalone J symbol located below the main wordmark, as a square production icon on a genuinely transparent background. Remove the navy background and remove the large wordmark. Preserve EXACTLY this specific J's curved lower hook, stem, diagonal separating gap, lime top shape, proportions and silhouette; do not invent another J. Render clean solid warm-white #f0f4f3 and acid-lime #d8fa45 fills, eliminating subtle surface texture. Center the complete isolated J, fully visible, with a little transparent padding. No other text, backdrop, checkerboard, badge, glow, shadow or new design elements."
+    },
+    {
+      "key": "seashine",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/public/images/seashine/cover.webp"
+      ],
+      "transparent": false,
+      "prompt": "This is an adaptation of the owner's existing portfolio artwork, not a new project feature or new product claim. Produce a polished landscape portfolio cover, 3:2 composition. It must work cropped both to a central 2:1 desktop card and a central 4:3 phone card: keep every important subject completely inside the middle 76% of image width and middle 64% of image height, with deliberate breathing room on all four sides. Expand the surrounding background to the image edges. Remove the existing year/header strip, rounded card outline, borders and any \"UI/UX DESIGN\" headings. Do not add headings, years, slogans, new interface features or fake metrics. Preserve the identity of the referenced original project. Keep the visual clean and legible at a small card size; use a strong focal point, minimal background detail and realistic material/light where appropriate. Project: XiaShang DaoJia retail mini-program redesign. Keep the recognizable two real smartphone mockups from the reference and their existing green-and-white retail interface screens, with the owner's existing white mascot wearing a dark green hood. Recompose two fully visible floating phones in a balanced slight diagonal, one showing shopping/home and the other member/profile, with the mascot as a small supporting character graphic. Use a fresh pale mint/aqua background that transitions subtly into light green; soft studio shadows, crisp phone edges, careful ample margins. Keep both devices entirely within the safe subject rectangle; no cropped phone bottoms. Reuse the reference screen designs, do not invent or market additional app capabilities. No large text or year label anywhere."
+    },
+    {
+      "key": "memoring",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/public/images/memoring/cover.webp"
+      ],
+      "transparent": false,
+      "prompt": "This is an adaptation of the owner's existing portfolio artwork, not a new project feature or new product claim. Produce a polished landscape portfolio cover, 3:2 composition. It must work cropped both to a central 2:1 desktop card and a central 4:3 phone card: keep every important subject completely inside the middle 76% of image width and middle 64% of image height, with deliberate breathing room on all four sides. Expand the surrounding background to the image edges. Remove the existing year/header strip, rounded card outline, borders and any \"UI/UX DESIGN\" headings. Do not add headings, years, slogans, new interface features or fake metrics. Preserve the identity of the referenced original project. Keep the visual clean and legible at a small card size; use a strong focal point, minimal background detail and realistic material/light where appropriate. Project: MemoRing smart ring. Preserve the exact broad graphite-black metallic smart ring shown in the reference, including the rounded asymmetric outer shell, dark glossy inner opening, narrow side recess, tiny indicator and small hole. Do not turn it into jewelry, a watch, a generic circular band, or add screens/sensors. Show one complete ring in an elegant 3/4 product view at center, with a precise controlled rim light and a tiny restrained cyan indicator, over a nearly black charcoal studio background with a soft slate halo and faint ground shadow. The whole ring silhouette must remain comfortably within the central safe area in both crops. Premium tangible material, clean product photography, no text, no graphics, no particles, no second ring."
+    },
+    {
+      "key": "shike",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/public/images/shike/cover.webp"
+      ],
+      "transparent": false,
+      "prompt": "This is an adaptation of the owner's existing portfolio artwork, not a new project feature or new product claim. Produce a polished landscape portfolio cover, 3:2 composition. It must work cropped both to a central 2:1 desktop card and a central 4:3 phone card: keep every important subject completely inside the middle 76% of image width and middle 64% of image height, with deliberate breathing room on all four sides. Expand the surrounding background to the image edges. Remove the existing year/header strip, rounded card outline, borders and any \"UI/UX DESIGN\" headings. Do not add headings, years, slogans, new interface features or fake metrics. Preserve the identity of the referenced original project. Keep the visual clean and legible at a small card size; use a strong focal point, minimal background detail and realistic material/light where appropriate. Project: Shike recipe community mobile app. Recompose the existing real app screen artwork from the reference into a clean, intentional editorial interface showcase. Use two or three large overlapping white rounded smartphone/interface panels, at a restrained diagonal, showing the reference's actual white/green recipe browsing and food-photo grid designs. Maintain the original design language: white surfaces, dark green navigation accents, yellow recipe highlights and colorful food photography. Keep all important screen panels in the central crop-safe rectangle, each complete rather than cut by the frame. Use a very light warm-gray/sage studio background with subtle soft shadows. Avoid the old busy all-over repeated mosaic. Do not add invented UI features, made-up app headlines, year banners or decorative device branding. No text outside the original interface artwork."
+    },
+    {
+      "key": "ip",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/public/images/ip/cover.webp"
+      ],
+      "transparent": false,
+      "prompt": "This is an adaptation of the owner's existing portfolio artwork, not a new project feature or new product claim. Produce a polished landscape portfolio cover, 3:2 composition. It must work cropped both to a central 2:1 desktop card and a central 4:3 phone card: keep every important subject completely inside the middle 76% of image width and middle 64% of image height, with deliberate breathing room on all four sides. Expand the surrounding background to the image edges. Remove the existing year/header strip, rounded card outline, borders and any \"UI/UX DESIGN\" headings. Do not add headings, years, slogans, new interface features or fake metrics. Preserve the identity of the referenced original project. Keep the visual clean and legible at a small card size; use a strong focal point, minimal background detail and realistic material/light where appropriate. Project: XiaShang Coffee white dolphin/porpoise mascot. Preserve the reference character's exact identity: soft creamy-white rounded body and small head fin, black glossy eyes, small smile, pink cheeks, dark green apron with a simple small white emblem, holding a black gooseneck coffee pot and pouring into a light ceramic cup with a dripper. Preserve the expression and apron design; do not replace it with a bear, seal, snowman or human. Recompose this as an appealing polished 3D character portrait showing the complete head, both arms, coffee pot, dripper and cup together inside the central safe region, with no head/hand/pot clipping in either crop. Soft warm light, a restrained warm beige/taupe studio background, subtle contact shadows, tactile matte material. Plenty of space above the fin and around the character. No added lettering or slogans."
+    },
+    {
+      "key": "other",
+      "refs": [
+        "/Users/liuzhenkang/Desktop/workspace/刘振康-个人简历网站/public/images/other/cover.webp"
+      ],
+      "transparent": false,
+      "prompt": "This is an adaptation of the owner's existing portfolio artwork, not a new project feature or new product claim. Produce a polished landscape portfolio cover, 3:2 composition. It must work cropped both to a central 2:1 desktop card and a central 4:3 phone card: keep every important subject completely inside the middle 76% of image width and middle 64% of image height, with deliberate breathing room on all four sides. Expand the surrounding background to the image edges. Remove the existing year/header strip, rounded card outline, borders and any \"UI/UX DESIGN\" headings. Do not add headings, years, slogans, new interface features or fake metrics. Preserve the identity of the referenced original project. Keep the visual clean and legible at a small card size; use a strong focal point, minimal background detail and realistic material/light where appropriate. Project: the owner's commercial graphic design and beverage campaign artwork. Recompose the original red Chinese beverage campaign illustration as a sophisticated landscape cover: retain the recognizable cheerful round pink illustrated character with raised arms, the two original beverage bottles and the red/yellow visual language, but arrange the character and both bottles as one complete, unclipped central illustration. Use the same friendly hand-drawn rounded line style and a rich red background with very restrained tone-on-tone linework and a few existing yellow sparkle shapes. Keep the entire character face and bottle silhouettes within the central safe region for both card crops. Remove the large campaign headline from the top; original bottle label graphics may remain part of the depicted packaging, but add no new lettering, logos, claims, years or UI-style headings. A clear lively focal point and generous controlled red margins, no poster frame, no collage of unrelated brands."
+    }
+  ]
+}

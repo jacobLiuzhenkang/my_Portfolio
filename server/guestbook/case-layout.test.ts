@@ -58,4 +58,18 @@ describe("project text and image relationships", () => {
     );
     expect(recentCaseLayout(updated, "viform")).toBe(updated);
   });
+  it("keeps an existing image with a revised caption in its original position", () => {
+    const content =
+      "### 我的贡献\n贡献\n\n![新的图片说明](/images/viform/workspace.png)\n\n### 关键取舍\n取舍";
+    const updated = recentCaseLayout(content, "viform");
+    expect(updated).toBe(content);
+    const html = renderToStaticMarkup(
+      createElement(CaseStudy, {
+        content: updated,
+        gallery: ["/images/viform/workspace.png"],
+        title: "VIFORM",
+      })
+    );
+    expect((html.match(/<img\s/g) || []).length).toBe(1);
+  });
 });

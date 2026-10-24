@@ -2,6 +2,10 @@ import { asc, eq } from "drizzle-orm";
 import { getDb } from "../server/queries/connection";
 import { experiences, projects, resumeProfiles } from "./schema";
 import {
+  isKnownRecentCase,
+  planRecentProjectUpdate,
+} from "./recent-project-upgrade";
+import {
   currentExperience,
   historicalWorkflow,
   profileCopy,
@@ -67,7 +71,9 @@ export async function upgradePortfolioContent() {
     profileFields: 0,
     experiences: 0,
     projectsAdded: 0,
+    projectsUpdated: 0,
     customFieldsKept: [] as string[],
+    customProjectFieldsKept: [] as { id: number; fields: string[] }[],
   };
   await db.transaction(async tx => {
     const [profile] = await tx
@@ -125,18 +131,37 @@ export async function upgradePortfolioContent() {
         result.experiences += 1;
       }
     }
-    const existingProjects = await tx.select().from(projects);
+    const existingProjects = await tx.select().from(projects).for("update");
     for (const project of recentProjects) {
+      const kind = project.coverImage.includes("/viform/") ? "viform" : "sac";
       // An administrator may rename a case; its original local cover also identifies it.
-      if (
-        existingProjects.some(
-          item =>
-            item.title === project.title ||
-            item.coverImage === project.coverImage ||
-            item.content === project.content
-        )
-      )
+      const existing = existingProjects.find(
+        item =>
+          item.title === project.title ||
+          item.coverImage === project.coverImage ||
+          item.content === project.content ||
+          isKnownRecentCase(item.content, kind)
+      );
+      if (existing) {
+        const { patch, customFieldsKept } = planRecentProjectUpdate(
+          existing,
+          project,
+          kind
+        );
+        if (customFieldsKept.length)
+          result.customProjectFieldsKept.push({
+            id: existing.id,
+            fields: customFieldsKept,
+          });
+        if (Object.keys(patch).length) {
+          await tx
+            .update(projects)
+            .set({ ...patch, updatedAt: new Date() })
+            .where(eq(projects.id, existing.id));
+          result.projectsUpdated += 1;
+        }
         continue;
+      }
       await tx.insert(projects).values(project);
       result.projectsAdded += 1;
     }

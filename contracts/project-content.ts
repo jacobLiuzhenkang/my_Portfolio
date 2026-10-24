@@ -47,7 +47,8 @@ export function legacyPlain(markdown: string) {
 export function recentCaseLayout(content: string, kind: "viform" | "sac") {
   let result = caseMarkdown(content);
   const before = (heading: string, image: string) => {
-    if (!result.includes(image)) {
+    const source = [...inlineImageSources(image)][0];
+    if (source && !inlineImageSources(result).has(source)) {
       const key = "### " + heading;
       if (result.includes(key))
         result = result.replace(key, image + "\n\n" + key);

@@ -170,14 +170,12 @@ body:has(.pf-shell):not(.dialog-open) {
   color: var(--pf-white);
   line-height: 1;
 }
-.pf-brand > span {
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 29px;
-  font-weight: 800;
-  letter-spacing: -0.08em;
-}
-.pf-brand > i {
-  display: none;
+.pf-brand-wordmark {
+  display: block;
+  flex: 0 0 auto;
+  width: 104px;
+  height: 32px;
+  object-fit: contain;
 }
 .pf-brand > small {
   padding-left: 15px;
@@ -479,6 +477,25 @@ body.dialog-open .pf-scroll-telemetry {
     rgba(5, 9, 13, 0.38)
   );
 }
+/* Keep the denser desktop stars visible without moving the reading layout. */
+@media (min-width: 761px) {
+  .pf-hero {
+    background: linear-gradient(
+      90deg,
+      rgba(5, 9, 13, 0.64),
+      rgba(5, 9, 13, 0.46) 44%,
+      rgba(5, 9, 13, 0.02) 75%
+    );
+  }
+  .pf-work {
+    background: linear-gradient(
+      90deg,
+      rgba(5, 9, 13, 0.84),
+      rgba(5, 9, 13, 0.75) 72%,
+      rgba(5, 9, 13, 0.38)
+    );
+  }
+}
 .pf-filters {
   display: flex;
   flex-wrap: wrap;
@@ -528,7 +545,12 @@ body.dialog-open .pf-scroll-telemetry {
   background: #0b141c;
   text-align: left;
 }
-.pf-project-media > img {
+.pf-project-media > picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pf-project-media img {
   display: block;
   width: 100%;
   height: 100%;
@@ -541,10 +563,10 @@ body.dialog-open .pf-scroll-telemetry {
 .is-featured .pf-project-media {
   aspect-ratio: 16 / 9;
 }
-.is-featured .pf-project-media > img {
+.is-featured .pf-project-media img {
   object-fit: cover;
 }
-.pf-project-media:hover > img {
+.pf-project-media:hover img {
   transform: scale(1.025);
   filter: brightness(0.85);
 }
@@ -1258,9 +1280,6 @@ body.dialog-open .pf-scroll-telemetry {
     height: 68px;
     gap: 12px;
     padding-inline: 20px;
-  }
-  .pf-brand > span {
-    font-size: 27px;
   }
   .pf-brand > small {
     font-size: 8px;

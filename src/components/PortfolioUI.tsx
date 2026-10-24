@@ -120,8 +120,13 @@ export function PortfolioHeader({
     <NavigationDialog.Root open={menu} onOpenChange={setMenu}>
       <header className="pf-header">
         <Link className="pf-brand" to="/" aria-label="刘振康作品集首页">
-          <span>LZ</span>
-          <i>®</i>
+          <img
+            className="pf-brand-wordmark"
+            src="/brand/jacob/wordmark.svg"
+            alt="Jacob"
+            width={416}
+            height={128}
+          />
           <small>
             LIU ZHENKANG
             <br />

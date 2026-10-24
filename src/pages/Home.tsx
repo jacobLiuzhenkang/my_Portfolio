@@ -1,4 +1,6 @@
 import { usePhoneLayout } from "@/hooks/use-phone-layout";
+import { PHONE_QUERY } from "@contracts/phone-visual";
+import { projectCoverSources } from "@contracts/project-covers";
 import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
 import { useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Braces } from "lucide-react";
@@ -29,6 +31,7 @@ function ProjectCard({
   onOpen: () => void;
 }) {
   const status = project.tags.find(tag => /验证|审阅|迭代|上线/.test(tag));
+  const cover = projectCoverSources(project.coverUrl);
   return (
     <article className={`pf-project${featured ? " is-featured" : ""}`}>
       <button
@@ -37,13 +40,19 @@ function ProjectCard({
         aria-label={`查看 ${project.title} 项目详情`}
       >
         {project.coverUrl ? (
-          <img
-            src={project.coverUrl}
-            alt={`${project.title} 实际项目画面`}
-            width={1600}
-            height={1000}
-            loading={featured ? "eager" : "lazy"}
-          />
+          <picture>
+            {cover && <>
+              <source media={PHONE_QUERY} srcSet={cover.mobile} />
+              <source media="(min-width: 1200px)" srcSet={cover.wide} />
+            </>}
+            <img
+              src={cover?.desktop ?? project.coverUrl}
+              alt={`${project.title} ${cover ? "项目封面" : "实际项目画面"}`}
+              width={1600}
+              height={1000}
+              loading={featured ? "eager" : "lazy"}
+            />
+          </picture>
         ) : (
           <span>{project.title}</span>
         )}
