@@ -22,7 +22,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "npm ci --no-audit --no-fund",
-  "regions": ["sin1"],
+  "regions": [
+    "sin1"
+  ],
   "functions": {
     "api/**/*.ts": {
       "maxDuration": 30,
@@ -30,6 +32,10 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    },
     {
       "source": "/growth",
       "destination": "/index.html"
