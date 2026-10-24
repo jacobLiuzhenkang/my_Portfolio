@@ -33,6 +33,11 @@ describe("private portfolio uploads", () => {
     expect(key.startsWith(uploadPrefix(1))).toBe(true);
     expect(key.split("/")).not.toContain("..");
   });
+  it("uses ASCII signing paths for Chinese filenames while retaining the extension", () => {
+    const key = makeUploadKey(1, "刘振康-中文简历📄.pdf", "resume");
+    expect(key).toMatch(/^production\/u\/1\/resumes\/[a-f0-9-]+\/file\.pdf$/);
+    expect(makeUploadKey(1, "resume-cn.pdf", "resume")).toMatch(/\/resume-cn\.pdf$/);
+  });
   it("does not inspect another account's private blob", async () => {
     await expect(registerUploadedFile(1, { key: "production/u/2/files/photo.png", name: "photo.png", purpose: "file" })).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(state.head).not.toHaveBeenCalled();

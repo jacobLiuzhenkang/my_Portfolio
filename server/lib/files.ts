@@ -25,12 +25,16 @@ export function makeUploadKey(
   name: string,
   purpose: UploadPurpose
 ) {
-  const cleanName = Array.from(name)
-    .map(char =>
-      char.charCodeAt(0) < 32 || char === "/" || char === "\\" ? "-" : char
-    )
-    .join("")
-    .replace(/\.\./g, "-");
+  // Blob delegation scopes currently decode non-ASCII paths differently from
+  // presigned URLs. Keep the object key ASCII; preserve the original name in DB.
+  const extension = name.match(/\.[A-Za-z0-9]{1,10}$/)?.[0].toLowerCase() || "";
+  const stem = name
+    .slice(0, name.length - extension.length)
+    .normalize("NFKD")
+    .replace(/[^A-Za-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 120) || "file";
+  const cleanName = `${stem}${extension}`;
   const folder =
     purpose === "resume"
       ? "resumes"
