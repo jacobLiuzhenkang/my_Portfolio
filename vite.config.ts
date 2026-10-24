@@ -43,7 +43,7 @@ async function countFiles(directory: string): Promise<number> {
 export default defineConfig(({ command }) => ({
   publicDir: command === "build" ? false : path.resolve(__dirname, "public"),
   plugins: [
-    devServer({ entry: "api/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
+    devServer({ entry: "server/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
     inspectAttr(), react(),
     {
       name: "resilient-public-assets",

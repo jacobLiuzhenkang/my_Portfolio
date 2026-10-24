@@ -6,6 +6,7 @@ import { admins, adminSessions, storedFiles } from "@db/schema";
 import { createSession, destroySession } from "./auth";
 import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
+import { env } from "./lib/env";
 
 const credentials = z.object({
   username: z.string().trim().min(3, "账号至少 3 个字符").max(64).regex(/^[A-Za-z0-9_.-]+$/, "账号仅支持字母、数字、点、下划线与连字符"),
@@ -36,13 +37,14 @@ export const authRouter = createRouter({
   })),
 
   setup: publicQuery.input(credentials).mutation(async ({ ctx, input }) => {
+    if (env.isProduction) throw new TRPCError({ code: "FORBIDDEN", message: "线上管理员由部署时安全初始化，请使用已有账号登录。" });
     if (await hasAdmin()) throw new TRPCError({ code: "FORBIDDEN", message: "管理员已初始化，请直接登录" });
     const passwordHash = await bcrypt.hash(input.password, 12);
     const [{ id }] = await getDb().insert(admins).values({
       username: input.username,
       passwordHash,
       displayName: "刘振康",
-    }).$returningId();
+    }).returning({ id: admins.id });
     await getDb().update(storedFiles).set({ ownerId: id }).where(isNull(storedFiles.ownerId));
     await createSession(id, ctx.resHeaders);
     return { ok: true };

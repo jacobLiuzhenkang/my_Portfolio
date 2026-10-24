@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "@/providers/trpc";
+import { trpc } from "@/providers/trpc-client";
 import { Field, FormActions } from "./common";
 
 export default function AccountManager({ username, onSaved, onError }: { username: string; onSaved: () => void; onError: (message: string) => void }) {

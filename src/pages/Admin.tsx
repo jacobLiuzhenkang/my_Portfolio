@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, BriefcaseBusiness, FolderLock, Images, KeyRound, LogOut, UserRound } from "lucide-react";
-import { trpc } from "@/providers/trpc";
+import { trpc } from "@/providers/trpc-client";
 import ProfileManager from "@/components/admin/ProfileManager";
 import ExperienceManager from "@/components/admin/ExperienceManager";
 import ProjectManager from "@/components/admin/ProjectManager";

@@ -349,7 +349,7 @@ export function PublicLoading({ failed = false }: { failed?: boolean }) {
       <div className="pf-loader-code">
         LZ://PORTFOLIO<span>_</span>
       </div>
-      <p>{failed ? "暂时无法读取内容，请稍后重试。" : "正在连接作品数据库"}</p>
+      <p>{failed ? "暂时无法读取内容，请稍后重试。" : "正在载入作品集"}</p>
       {failed && (
         <button onClick={() => window.location.reload()}>重新加载 ↗</button>
       )}

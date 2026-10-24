@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
-import { trpc } from "@/providers/trpc";
+import { trpc } from "@/providers/trpc-client";
 import { Field, FormActions, linesToArray } from "./common";
 
 type Profile = {

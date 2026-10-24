@@ -27,9 +27,17 @@ const t = initTRPC.context<TrpcContext>().create({
 });
 
 export const createRouter = t.router;
-export const publicQuery = t.procedure;
+export const publicQuery = t.procedure.use(({ ctx, type, next }) => {
+  const origin = ctx.req.headers.get("origin");
+  if (type === "mutation" && origin) {
+    let sameHost = false;
+    try { sameHost = new URL(origin).host === new URL(ctx.req.url).host; } catch { /* Invalid browser origin is rejected. */ }
+    if (!sameHost) throw new TRPCError({ code: "FORBIDDEN", message: "不接受跨站修改请求。" });
+  }
+  return next();
+});
 
-export const adminQuery = t.procedure.use(({ ctx, next }) => {
+export const adminQuery = publicQuery.use(({ ctx, next }) => {
   if (!ctx.admin) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "请先登录管理员账号" });
   }

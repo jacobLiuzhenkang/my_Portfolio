@@ -15,5 +15,39 @@
       "destination": "https://viform.liuzhenkang.cn/privacy/",
       "permanent": false
     }
+  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/public",
+  "installCommand": "npm ci --no-audit --no-fund",
+  "regions": ["sin1"],
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 30,
+      "includeFiles": "public/downloads/resume-cn.pdf"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/growth",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
   ]
 }

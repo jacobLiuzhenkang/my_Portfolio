@@ -3,6 +3,7 @@ name: liuzhenkang-resume
 services:
   db:
     image: mysql:8.4
+    profiles: ["legacy"]
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
@@ -18,6 +19,21 @@ services:
       retries: 30
       start_period: 15s
 
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: resume
+      POSTGRES_PASSWORD: resume-local-only
+      POSTGRES_DB: resume
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resume -d resume"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   web:
     image: node:22-bookworm-slim
     init: true
@@ -28,9 +44,7 @@ services:
       - "127.0.0.1:3000:3000"
     environment:
       NODE_ENV: development
-      APP_ID: resume-local
-      APP_SECRET: resume-local-development-only
-      DATABASE_URL: mysql://resume:resume-local-only@db:3306/resume
+      DATABASE_URL: postgresql://resume:resume-local-only@postgres:5432/resume
     volumes:
       - .:/source:ro
       - node-modules:/mnt/agents/output/app/node_modules
@@ -39,13 +53,13 @@ services:
       - /tmp
       - /mnt/agents/output/app
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     command:
       - /bin/sh
       - -ec
       - |
-        cp -a /source/. .
+        tar -C /source --exclude=.git --exclude=node_modules --exclude=dist --exclude=output -cf - . | tar -xf -
         npm ci --no-audit --no-fund
         npm run db:push -- --force
         mkdir -p node_modules/.cache
@@ -63,3 +77,4 @@ volumes:
   mysql-data:
   node-modules:
   npm-cache:
+  postgres-data:

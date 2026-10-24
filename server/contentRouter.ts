@@ -83,7 +83,7 @@ export const contentRouter = createRouter({
   }),
 
   createExperience: adminQuery.input(experienceInput).mutation(async ({ input }) => {
-    const [{ id }] = await getDb().insert(experiences).values(input).$returningId();
+    const [{ id }] = await getDb().insert(experiences).values(input).returning({ id: experiences.id });
     return { id };
   }),
   updateExperience: adminQuery.input(z.object({ id: z.number().int().positive(), data: experienceInput })).mutation(async ({ input }) => {
@@ -96,7 +96,7 @@ export const contentRouter = createRouter({
   }),
 
   createProject: adminQuery.input(projectInput).mutation(async ({ input }) => {
-    const [{ id }] = await getDb().insert(projects).values(input).$returningId();
+    const [{ id }] = await getDb().insert(projects).values(input).returning({ id: projects.id });
     return { id };
   }),
   updateProject: adminQuery.input(z.object({ id: z.number().int().positive(), data: projectInput })).mutation(async ({ input }) => {

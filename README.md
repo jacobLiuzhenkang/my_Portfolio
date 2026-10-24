@@ -6,7 +6,7 @@
 docker compose up -d
 ```
 
-访问 http://localhost:3000 。网站、依赖与 MySQL 均在 Docker 中运行；主机源码只读挂载，容器启动时复制源码。修改源文件后运行 `docker compose restart web`。启动不会覆盖现有后台内容；停止用 `docker compose down`，保留数据卷。
+访问 http://localhost:3000 。网站、依赖与 PostgreSQL 均在 Docker 中运行；主机源码只读挂载，容器启动时复制源码并排除 Git 与构建缓存。修改源文件后运行 `docker compose restart web`。启动不会覆盖现有后台内容；停止用 `docker compose down`，保留数据卷。
 
 现有数据库如需应用本次定向内容更新，在容器启动后显式运行：
 
@@ -37,6 +37,17 @@ docker compose exec -T web npm run check
 docker compose exec -T web npm run test
 docker compose exec -T web npm run build
 ```
+
+
+## Vercel 完整后台
+
+线上沿用 `/admin` 管理作品、经历、正文和文件。数据库使用 Neon Postgres 免费方案；文件使用 Vercel 私有 Blob，连接项目后通过 OIDC 访问，浏览器不会获得长期读写令牌。上传采用限定 MIME、大小、路径和时效的直传地址，最大 25 MB。
+
+`vercel.json` 指定 Vite 的 `dist/public` 输出及单一 API 入口；原 `/viform` 和隐私链接重定向保留。Production 使用持久数据库；Preview 使用独立数据库分支，文件路径按环境隔离，预览后台不会删除正式文件。
+
+环境变量由连接的云资源注入：`DATABASE_URL`、`BLOB_STORE_ID`。生产管理员通过私密部署输入初始化，公开注册入口在生产关闭。不要把连接字符串、密码或私密导入文件提交 Git。部署不会自动运行种子或覆盖后台内容。
+
+本地原 MySQL 数据卷保留为 legacy profile，当前开发使用独立 PostgreSQL 数据卷。迁移命令只允许向空数据库导入，保留原记录 ID。
 
 以下保留原模板开发说明。
 

@@ -8,7 +8,7 @@ import {
   PublicLoading,
   type ProjectView,
 } from "@/components/PortfolioUI";
-import { trpc } from "@/providers/trpc";
+import { trpc } from "@/providers/trpc-client";
 
 const capabilities = [
   ["理解问题", "梳理业务现场、使用场景与约束，找到真正需要解决的问题。"],

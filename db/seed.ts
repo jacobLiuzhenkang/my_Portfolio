@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { count } from "drizzle-orm";
-import { getDb } from "../api/queries/connection";
-import { experiences, projects, resumeProfiles, storedFiles } from "./schema";
-import { storage } from "../api/lib/storage";
+import { getDb } from "../server/queries/connection";
+import { experiences, projects, resumeProfiles } from "./schema";
 import {
   currentExperience,
   historicalWorkflow,
@@ -39,29 +38,7 @@ async function seed() {
     process.exit(0);
   }
 
-  let resumeFileKey: string | null = null;
-  const pdfPath = "public/downloads/resume-cn.pdf";
-  try {
-    const bytes = await readFile(pdfPath);
-    const saved = await storage.uploadFile({
-      fileContent: new Uint8Array(bytes),
-      fileName: "resumes/刘振康-中文简历.pdf",
-      contentType: "application/pdf",
-    });
-    resumeFileKey = saved.key;
-    await db.insert(storedFiles).values({
-      key: saved.key,
-      ownerId: null,
-      name: "刘振康-中文简历.pdf",
-      size: saved.size,
-      contentType: "application/pdf",
-    });
-  } catch (error) {
-    console.warn(
-      "Resume PDF was not seeded:",
-      error instanceof Error ? error.message : error
-    );
-  }
+  const resumeFileKey = null;
 
   await db.insert(resumeProfiles).values({
     fullName: "刘振康",
@@ -255,8 +232,8 @@ async function seed() {
   ];
 
   for (const [index, item] of source.entries()) {
-    const markdown = await readFile(`public/posts/${item.file}`, "utf8");
-    const { file: _file, ...data } = item;
+    const { file, ...data } = item;
+    const markdown = await readFile(`public/posts/${file}`, "utf8");
     await db.insert(projects).values({
       ...data,
       content: plain(markdown),

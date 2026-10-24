@@ -1,5 +1,5 @@
 import { asc, eq } from "drizzle-orm";
-import { getDb } from "../api/queries/connection";
+import { getDb } from "../server/queries/connection";
 import { experiences, projects, resumeProfiles } from "./schema";
 import {
   currentExperience,

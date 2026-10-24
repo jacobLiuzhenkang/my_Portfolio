@@ -15,7 +15,10 @@ function readToken(req: Request) {
   const cookies = req.headers.get("cookie") ?? "";
   for (const item of cookies.split(";")) {
     const [name, ...rest] = item.trim().split("=");
-    if (name === SESSION_COOKIE) return decodeURIComponent(rest.join("="));
+    if (name === SESSION_COOKIE) {
+      try { const token = decodeURIComponent(rest.join("=")); return /^[A-Za-z0-9_-]{32,128}$/.test(token) ? token : undefined; }
+      catch { return undefined; }
+    }
   }
   return undefined;
 }

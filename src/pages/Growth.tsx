@@ -5,7 +5,7 @@ import {
   PortfolioHeader,
   PublicLoading,
 } from "@/components/PortfolioUI";
-import { trpc } from "@/providers/trpc";
+import { trpc } from "@/providers/trpc-client";
 
 const groupMeta = [
   {
