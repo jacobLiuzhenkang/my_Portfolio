@@ -1,0 +1,65 @@
+name: liuzhenkang-resume
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: resume
+      MYSQL_USER: resume
+      MYSQL_PASSWORD: resume-local-only
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -h 127.0.0.1 -u $$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+  web:
+    image: node:22-bookworm-slim
+    init: true
+    restart: unless-stopped
+    working_dir: /mnt/agents/output/app
+    read_only: true
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: development
+      APP_ID: resume-local
+      APP_SECRET: resume-local-development-only
+      DATABASE_URL: mysql://resume:resume-local-only@db:3306/resume
+    volumes:
+      - .:/source:ro
+      - node-modules:/mnt/agents/output/app/node_modules
+      - npm-cache:/root/.npm
+    tmpfs:
+      - /tmp
+      - /mnt/agents/output/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        cp -a /source/. .
+        npm ci --no-audit --no-fund
+        npm run db:push -- --force
+        mkdir -p node_modules/.cache
+        ./node_modules/.bin/esbuild db/seed.ts --bundle --platform=node --format=esm --packages=external --outfile=node_modules/.cache/resume-seed.mjs
+        node node_modules/.cache/resume-seed.mjs
+        exec npm run dev -- --host 0.0.0.0 --strictPort
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/trpc/content.public').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+
+volumes:
+  mysql-data:
+  node-modules:
+  npm-cache:

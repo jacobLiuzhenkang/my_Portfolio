@@ -1,0 +1,8 @@
+node_modules
+dist
+.git
+*.swp
+*.log
+.env
+.runtime-check.mts
+runtime-check.mts
