@@ -26,7 +26,7 @@
     "sin1"
   ],
   "functions": {
-    "api/**/*.ts": {
+    "api/**/*.mjs": {
       "maxDuration": 30,
       "includeFiles": "public/downloads/resume-cn.pdf"
     }
