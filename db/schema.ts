@@ -95,3 +95,5 @@ export type ResumeProfile = typeof resumeProfiles.$inferSelect;
 export type Experience = typeof experiences.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type StoredFile = typeof storedFiles.$inferSelect;
+
+export * from "./guestbook-schema";

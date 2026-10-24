@@ -45,10 +45,12 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://resume:resume-local-only@postgres:5432/resume
+      GUESTBOOK_LOCAL_MEDIA_DIR: /var/lib/portfolio/guestbook
     volumes:
       - .:/source:ro
       - node-modules:/mnt/agents/output/app/node_modules
       - npm-cache:/root/.npm
+      - guestbook-media:/var/lib/portfolio/guestbook
     tmpfs:
       - /tmp
       - /mnt/agents/output/app
@@ -62,6 +64,7 @@ services:
         tar -C /source --exclude=.git --exclude=node_modules --exclude=dist --exclude=output -cf - . | tar -xf -
         npm ci --no-audit --no-fund
         npm run db:push -- --force
+        npm run guestbook:migrate
         mkdir -p node_modules/.cache
         ./node_modules/.bin/esbuild db/seed.ts --bundle --platform=node --format=esm --packages=external --outfile=node_modules/.cache/resume-seed.mjs
         node node_modules/.cache/resume-seed.mjs
@@ -78,3 +81,4 @@ volumes:
   node-modules:
   npm-cache:
   postgres-data:
+  guestbook-media:

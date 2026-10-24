@@ -365,3 +365,65 @@ img { display: block; max-width: 100%; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+.case-editor-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.case-editor-tools select {
+  min-height: 44px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ffffff26;
+  color: inherit;
+  background: #111a16;
+  font: inherit;
+  font-size: 13px;
+}
+.case-editor-tools button {
+  min-height: 44px;
+}
+.case-editor-preview {
+  --pf-line: #ffffff24;
+  --pf-white: #f0f4f3;
+  --pf-cyan: #66d8f4;
+  --pf-dim: #82958c;
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid var(--pf-line);
+  background: #091117;
+  color: #bdcbd2;
+  font-size: 16px;
+  line-height: 1.95;
+}
+.case-editor-preview img {
+  max-width: 100%;
+  height: auto;
+}
+.case-editor-preview .case-study {
+  max-width: none;
+}
+.case-editor-preview .case-image img {
+  display: block;
+  width: 100%;
+}
+.case-editor-preview .case-image small {
+  display: block;
+  color: var(--pf-dim);
+  font-size: 12px;
+}
+.case-editor-preview p {
+  white-space: normal;
+}
+@media (max-width: 760px) {
+  .case-editor-preview {
+    padding: 14px;
+  }
+  .case-editor-tools select {
+    width: 100%;
+  }
+}

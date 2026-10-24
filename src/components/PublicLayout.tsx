@@ -13,9 +13,11 @@ function PublicFrame() {
   const smoothScroll = useSmoothScroll(enabled);
   useLayoutEffect(() => {
     document.title =
-      location.pathname === "/growth"
-        ? "我的成长 — 刘振康 · AI 产品工程师"
-        : "刘振康 · AI 产品工程师";
+      location.pathname === "/guestbook"
+        ? "留言板 — 刘振康"
+        : location.pathname === "/growth"
+          ? "我的成长 — 刘振康 · AI 产品工程师"
+          : "刘振康 · AI 产品工程师";
     const reset = () =>
       smoothScroll.current
         ? smoothScroll.current.scrollTo(0, { immediate: true })

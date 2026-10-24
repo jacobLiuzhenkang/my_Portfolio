@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && esbuild server/boot.ts --platform=node --bundle --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\" && esbuild server/vercel.ts --platform=node --bundle --format=esm --packages=external --tsconfig=tsconfig.server.json --outfile=dist/vercel-handler.mjs",
+    "build": "vite build && esbuild server/boot.ts --platform=node --bundle --external:sharp --format=esm --outdir=dist --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\" && esbuild server/vercel.ts --platform=node --bundle --format=esm --packages=external --tsconfig=tsconfig.server.json --outfile=dist/vercel-handler.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "NODE_ENV=production node dist/boot.js",
@@ -15,7 +15,9 @@
     "content:update": "mkdir -p node_modules/.cache && esbuild db/update-portfolio.ts --bundle --platform=node --format=esm --packages=external --outfile=node_modules/.cache/update-portfolio.mjs && node node_modules/.cache/update-portfolio.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "guestbook:migrate": "node scripts/migrate-guestbook.mjs",
+    "cases:restore": "node scripts/restore-case-layout.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "2.0.78",
@@ -74,15 +76,17 @@
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.70.0",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.2.2",
     "react-router": "^7.6.1",
     "recharts": "^2.15.4",
+    "sharp": "^0.35.5",
     "sonner": "^2.0.7",
     "superjson": "^2.2.6",
     "tailwind-merge": "^3.4.0",
     "three": "^0.186.1",
     "vaul": "^1.1.2",
-    "zod": "^4.3.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -113,5 +117,9 @@
   },
   "engines": {
     "node": "22.x"
+  },
+  "overrides": {
+    "zod": "$zod",
+    "lodash": "^4.18.0"
   }
 }

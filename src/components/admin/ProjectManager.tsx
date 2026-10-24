@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { ImagePlus, Plus, Trash2 } from "lucide-react";
 import { trpc } from "@/providers/trpc-client";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -9,6 +9,8 @@ import {
   FormActions,
   linesToArray,
 } from "./common";
+
+const CaseStudy = lazy(() => import("../CaseStudy"));
 
 type Project = {
   id: number;
@@ -73,6 +75,9 @@ function ProjectForm({
 }) {
   const [form, setForm] = useState(initial);
   const [uploadHint, setUploadHint] = useState("");
+  const contentField = useRef<HTMLTextAreaElement>(null);
+  const [inlineImage, setInlineImage] = useState("");
+  const [previewCase, setPreviewCase] = useState(false);
   const utils = trpc.useUtils();
   const onSuccess = async () => {
     await utils.content.public.invalidate();
@@ -200,15 +205,82 @@ function ProjectForm({
         rows={3}
         required
       />
-      <Field
-        label="项目详情"
-        value={form.content}
-        onChange={set("content")}
-        textarea
-        rows={12}
-        hint="纯文本编辑，空行会保留为段落间距"
-        required
-      />
+      <label className="admin-field">
+        <span>
+          案例正文（支持图文混排）<b> *</b>
+        </span>
+        <textarea
+          ref={contentField}
+          value={form.content}
+          onChange={event =>
+            setForm(old => ({ ...old, content: event.target.value }))
+          }
+          rows={16}
+          required
+        />
+        <small>
+          标题用
+          ###，图片标记放在对应文字之后。可从下方选择图集图片，插入当前光标位置。
+        </small>
+      </label>
+      <div className="case-editor-tools">
+        <select
+          value={inlineImage}
+          onChange={event => setInlineImage(event.target.value)}
+          aria-label="选择图集图片"
+        >
+          <option value="">选择一张图集图片</option>
+          {linesToArray(form.galleryText).map((src, index) => (
+            <option key={src} value={src}>
+              {"图片 " + (index + 1) + " · " + src.split("/").at(-1)}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          className="admin-secondary"
+          disabled={!inlineImage}
+          onClick={() => {
+            const start =
+                contentField.current?.selectionStart ?? form.content.length,
+              end = contentField.current?.selectionEnd ?? start;
+            const source = inlineImage
+              .replace(/\(/g, "%28")
+              .replace(/\)/g, "%29")
+              .replace(/ /g, "%20");
+            const image = "\n\n![图片说明](" + source + ")\n\n";
+            setForm(old => ({
+              ...old,
+              content:
+                old.content.slice(0, start) + image + old.content.slice(end),
+            }));
+            requestAnimationFrame(() => {
+              contentField.current?.focus();
+              contentField.current?.setSelectionRange(start + 4, start + 8);
+            });
+          }}
+        >
+          插入图片
+        </button>
+        <button
+          type="button"
+          className="admin-secondary"
+          onClick={() => setPreviewCase(value => !value)}
+        >
+          {previewCase ? "收起预览" : "预览图文排版"}
+        </button>
+      </div>
+      {previewCase && (
+        <div className="case-editor-preview">
+          <Suspense fallback={<p>正在生成预览…</p>}>
+            <CaseStudy
+              content={form.content}
+              gallery={linesToArray(form.galleryText)}
+              title={form.title}
+            />
+          </Suspense>
+        </div>
+      )}
       <Field
         label="图集图片"
         value={form.galleryText}

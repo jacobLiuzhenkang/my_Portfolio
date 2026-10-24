@@ -8,6 +8,7 @@ import { env } from "./lib/env";
 import { log } from "./lib/logger";
 import { handleClientLog } from "./lib/clientlog";
 import { REQUEST_ID_HEADER, runWithRequestId } from "./lib/requestcontext";
+import { guestbookRoutes } from "./guestbook/routes";
 import { resumeRoutes } from "./routes/resume";
 
 const app = new Hono<{ Bindings: HttpBindings }>();
@@ -57,8 +58,20 @@ app.use("*", async (c, next) => {
 // rebuild throw `TypeError: Cannot read private member #state ...`, so every
 // bodyless request (DELETE/PATCH on the app's own REST routes) 500s at dispatch.
 // /api/log keeps its own 64KB caps in lib/clientlog.ts, so it needs no middleware.
-app.use("/api/trpc/*", bodyLimit({ maxSize: 50 * 1024 * 1024 }));
-app.use("/api/trpc/*", async (c) => {
+const guestbookBodyLimit = bodyLimit({ maxSize: 64 * 1024, onError: c => c.json({ error: "请求内容过大。" }, 413) });
+const adminBodyLimit = bodyLimit({ maxSize: 50 * 1024 * 1024 });
+app.use("/api/trpc/*", async (c, next) => {
+  let requestPath: string;
+  try {
+    requestPath = decodeURIComponent(c.req.path);
+  } catch {
+    return c.body(null, 400);
+  }
+  return /(?:\/|,)guestbook\./.test(requestPath)
+    ? guestbookBodyLimit(c, next)
+    : adminBodyLimit(c, next);
+});
+app.use("/api/trpc/*", async c => {
   return fetchRequestHandler({
     endpoint: "/api/trpc",
     req: c.req.raw,
@@ -72,11 +85,12 @@ app.use("/api/trpc/*", async (c) => {
 // on the public preview URL — the cap has to bite before the read.
 app.post(
   "/api/log",
-  bodyLimit({ maxSize: 64 * 1024, onError: (c) => c.body(null, 413) }),
-  handleClientLog,
+  bodyLimit({ maxSize: 64 * 1024, onError: c => c.body(null, 413) }),
+  handleClientLog
 );
 app.route("/api/resume", resumeRoutes);
-app.all("/api/*", (c) => c.json({ error: "Not Found" }, 404));
+app.route("/api/guestbook", guestbookRoutes);
+app.all("/api/*", c => c.json({ error: "Not Found" }, 404));
 
 // Unhandled request errors must reach /tmp/kimi-logs/app.log, not just stdout:
 // that file is what the building agent reads when a preview 500s, and without

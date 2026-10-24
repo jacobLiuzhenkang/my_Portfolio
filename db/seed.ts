@@ -10,23 +10,6 @@ import {
 } from "./portfolio-content";
 import { upgradePortfolioContent } from "./upgrade-portfolio";
 
-function plain(markdown: string) {
-  return markdown
-    .split("\n")
-    .filter(
-      line => !/^\s*!\[/.test(line) && !/^\s*(---|___|\*\*\*)\s*$/.test(line)
-    )
-    .map(line =>
-      line
-        .replace(/^#{1,6}\s*/, "")
-        .replace(/\*\*/g, "")
-        .replace(/^\s*[-*+]\s+/, "• ")
-        .trimEnd()
-    )
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
 
 async function seed() {
   const db = getDb();
@@ -236,7 +219,7 @@ async function seed() {
     const markdown = await readFile(`public/posts/${file}`, "utf8");
     await db.insert(projects).values({
       ...data,
-      content: plain(markdown),
+      content: markdown.trim(),
       coverKey: null,
       published: true,
       sortOrder: index + 1,

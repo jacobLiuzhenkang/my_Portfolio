@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -12,6 +12,8 @@ import {
 import { Link } from "react-router";
 import * as NavigationDialog from "@radix-ui/react-dialog";
 import { useSceneMotion } from "@/hooks/use-scene-motion";
+
+const CaseStudy = lazy(() => import("./CaseStudy"));
 
 export type ProjectView = {
   id: number;
@@ -88,7 +90,11 @@ function ScrollTelemetry() {
   );
 }
 
-export function PortfolioHeader({ active }: { active: "work" | "growth" }) {
+export function PortfolioHeader({
+  active,
+}: {
+  active: "work" | "growth" | "guestbook";
+}) {
   const [menu, setMenu] = useState(false);
   const { enabled, systemReduced, toggle } = useSceneMotion();
   useEffect(() => {
@@ -128,6 +134,12 @@ export function PortfolioHeader({ active }: { active: "work" | "growth" }) {
           </Link>
           <Link className={active === "growth" ? "active" : ""} to="/growth">
             <span>02</span> 我的成长 <small>MY WORK LIFE</small>
+          </Link>
+          <Link
+            className={active === "guestbook" ? "active" : ""}
+            to="/guestbook"
+          >
+            留言板
           </Link>
           <a href={active === "work" ? "#contact" : "/#contact"}>
             <span>03</span> 联系我 <small>CONTACT</small>
@@ -205,6 +217,17 @@ export function PortfolioHeader({ active }: { active: "work" | "growth" }) {
                 <small>MY WORK LIFE</small>
               </span>
               <ArrowUpRight size={27} aria-hidden="true" />
+            </Link>
+            <Link
+              to="/guestbook"
+              className={active === "guestbook" ? "active" : undefined}
+              onClick={() => setMenu(false)}
+            >
+              <span>
+                <strong>留言板</strong>
+                <small>LEAVE A NOTE</small>
+              </span>
+              <MessageSquare size={26} aria-hidden="true" />
             </Link>
             <Link to="/#contact" onClick={() => setMenu(false)}>
               <span>
@@ -286,39 +309,13 @@ export function ProjectDialog({
           )}
         </div>
         <div className="dialog-body">
-          <div className="project-story">
-            {project.content
-              .split("\n")
-              .map((line, index) =>
-                !line.trim() ? (
-                  <span key={index} className="story-space" />
-                ) : [
-                    "项目背景",
-                    "我的贡献",
-                    "关键取舍",
-                    "协作与边界",
-                    "当前阶段",
-                    "图集说明",
-                    "验证方式",
-                  ].includes(line.trim()) ? (
-                  <h3 key={index}>{line}</h3>
-                ) : (
-                  <p key={index}>{line}</p>
-                )
-              )}
-          </div>
-          <div className="project-gallery">
-            {project.gallery.map((src, index) => (
-              <img
-                key={src}
-                src={src}
-                alt={`${project.title} 项目图 ${index + 1}`}
-                width={1400}
-                height={1000}
-                loading="lazy"
-              />
-            ))}
-          </div>
+          <Suspense fallback={<p>正在打开项目内容…</p>}>
+            <CaseStudy
+              content={project.content}
+              gallery={project.gallery}
+              title={project.title}
+            />
+          </Suspense>
         </div>
       </div>
     </dialog>
@@ -399,6 +396,10 @@ export function PortfolioFooter({ profile }: { profile: ProfileContact }) {
                 {copied ? <Check /> : <Copy />}
                 {copied ? "已复制" : "复制邮箱"}
               </button>
+              <Link to="/guestbook" className="pf-footer-guestbook">
+                <MessageSquare />
+                给我留言
+              </Link>
               <button onClick={() => setWechat(true)}>
                 <MessageSquare />
                 微信

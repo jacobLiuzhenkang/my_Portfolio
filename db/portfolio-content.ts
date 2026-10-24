@@ -1,3 +1,4 @@
+import { recentCaseLayout } from "../contracts/project-content";
 /** Public copy shared by the initial seed and the guarded content update. */
 export const profileCopy = {
   headline: "把业务问题，做成可运行的产品。",
@@ -57,6 +58,10 @@ export const recentProjects = [
     sortOrder: 0,
   },
 ];
+
+for (const project of recentProjects) {
+  project.content = recentCaseLayout(project.content, project.coverImage.includes("/viform/") ? "viform" : "sac");
+}
 
 export const historicalWorkflow =
   "搭建 ComfyUI 电商绘图工作流，将图像生成与实际商品素材制作连接起来，支持电商内容生产。";

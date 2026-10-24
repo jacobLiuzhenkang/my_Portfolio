@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Growth from "./pages/Growth";
 import PublicLayout from "./components/PublicLayout";
 
+const Guestbook = lazy(() => import("./pages/Guestbook"));
 const Admin = lazy(() => import("./pages/Admin"));
 
 export default function App() {
@@ -26,6 +27,16 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/growth" element={<Growth />} />
+        <Route
+          path="/guestbook"
+          element={
+            <Suspense
+              fallback={<main className="pf-loading">正在打开留言板…</main>}
+            >
+              <Guestbook />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<Home />} />
       </Route>
     </Routes>

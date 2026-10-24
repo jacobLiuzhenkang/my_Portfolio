@@ -1,9 +1,11 @@
+import { guestbookRouter } from "./guestbook/router";
 import { authRouter } from "./authRouter";
 import { contentRouter } from "./contentRouter";
 import { createRouter, publicQuery } from "./middleware";
 import { storageRouter } from "./storageRouter";
 
 export const appRouter = createRouter({
+  guestbook: guestbookRouter,
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,
   content: contentRouter,
