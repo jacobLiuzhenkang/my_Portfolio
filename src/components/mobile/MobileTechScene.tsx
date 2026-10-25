@@ -1,46 +1,16 @@
 import { useEffect, useRef } from "react";
+import { PhoneFluidDiagnostics } from "./PhoneFluidDiagnostics";
+import { PHONE_FLOW_GLSL as flowGLSL, PHONE_FLUID_VERSION, phoneFluidOptions, phoneFluidFragment, createPhoneNoiseTable, type PhoneFluidMode } from "./phone-fluid-shaders";
 import * as THREE from "three";
 import { useSceneMotion } from "@/hooks/use-scene-motion";
 import { advancePhoneQuality, type PhoneQuality } from "@contracts/phone-visual";
 
 const TAU = Math.PI * 2;
-// Both the luminous surface and the points sample this same velocity field.
-const flowGLSL = `
-  uniform float uPhase;
-  uniform float uScroll;
-  uniform float uAspect;
-  uniform float uReading;
-  uniform float uGather;
-  uniform vec2 uPointer;
-  uniform vec2 uWake;
-  vec2 flow(vec2 p) {
-    float a = sin(p.y * 1.8 + uPhase) + cos(p.x * 1.3 - uPhase);
-    vec2 v = vec2(cos(a + p.y * 1.4), sin(a - p.x * 1.2));
-    v += vec2(sin(p.y * 3.4 - uPhase * 2.0), cos(p.x * 2.7 + uPhase)) * 0.32;
-    vec2 d = p - uPointer * vec2(uAspect, 1.0);
-    float wake = exp(-dot(d, d) * 2.8);
-    v += (uWake * 2.6 + vec2(-d.y, d.x) * length(uWake) * 2.5) * wake;
-    return v;
-  }
-  float hash(vec2 p) {
-    p = fract(p * vec2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
-  }
-  float noise(vec2 p) {
-    vec2 i = floor(p), f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + 1.), f.x), f.y);
-  }
-  float fbm(vec2 p) {
-    float n = 0.0, amplitude = 0.52;
-    for (int i = 0; i < 3; i++) { n += noise(p) * amplitude; p = mat2(.82, -.57, .57, .82) * p * 2.03 + 13.7; amplitude *= .5; }
-    return n;
-  }
-`;
-
 export default function MobileTechScene() {
   const host = useRef<HTMLDivElement>(null);
+  const options = useRef(phoneFluidOptions(window.location.search)).current;
+  const changeMode = useRef<(mode: PhoneFluidMode) => void>(() => {});
+  const diagnostics = useRef<() => Record<string, unknown>>(() => ({ version: PHONE_FLUID_VERSION, ready: false }));
   const { enabled } = useSceneMotion();
   const initialEnabled = useRef(enabled);
   const control = useRef<(running: boolean) => void>(() => {});
@@ -87,37 +57,31 @@ export default function MobileTechScene() {
     };
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const surface = new THREE.ShaderMaterial({
-      uniforms,
-      depthTest: false,
-      depthWrite: false,
-      toneMapped: false,
-      vertexShader:
-        "varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }",
-      fragmentShader: `precision highp float; varying vec2 vUv; ${flowGLSL}
-        void main() {
-          vec2 p = (vUv * 2.0 - 1.0) * vec2(uAspect, 1.0);
-          p += vec2(uScroll * .7, -uScroll * .4);
-          vec2 velocity = flow(p);
-          vec2 drift = vec2(cos(uPhase), sin(uPhase)) * .28;
-          vec2 warped = p + velocity * .48 + drift;
-          float field = fbm(warped * 1.4 + fbm(p * 1.2 + drift));
-          float folds = .5 + .5 * sin(field * 21.0 + warped.x * 1.4);
-          float filament = pow(folds, 9.0) * smoothstep(.23, .66, field);
-          float ribbon = smoothstep(.29, .69, field);
-          float right = smoothstep(-.55, .75, vUv.x * 2.0 - 1.0);
-          float light = exp(-length(p - vec2(.65 * uAspect, .15)) * .65);
-          float contrast = mix(.97, .6, uReading);
-          vec3 color = vec3(.009, .018, .028);
-          color += vec3(.01,.37,.56) * ribbon * (.35 + light * .65) * right * contrast;
-          color += vec3(.10,.71,.91) * filament * (.34 + light * .5) * right * contrast;
-          color += vec3(.62,.83,.25) * pow(filament, 2.0) * .065 * uGather;
-          color += vec3(.03,.20,.30) * light * .1;
-          color *= .75 + .25 * (1.0 - smoothstep(.4, 1.3, length(vUv - .5)));
-          gl_FragColor = vec4(color, 1.0);
-        }`,
-    });
-    const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), surface);
+    let mode = options.mode;
+    let noiseTexture: THREE.DataTexture | undefined;
+    const materials = new Map<PhoneFluidMode, THREE.ShaderMaterial>();
+    const getSurface = (next: PhoneFluidMode) => {
+      const cached = materials.get(next);
+      if (cached) return cached;
+      if (next === "stable" && !noiseTexture) {
+        noiseTexture = new THREE.DataTexture(createPhoneNoiseTable(), 256, 256, THREE.RedFormat, THREE.FloatType);
+        noiseTexture.minFilter = THREE.NearestFilter;
+        noiseTexture.magFilter = THREE.NearestFilter;
+        noiseTexture.generateMipmaps = false;
+        noiseTexture.needsUpdate = true;
+      }
+      const material = new THREE.ShaderMaterial({
+        uniforms: { ...uniforms, uNoiseTable: { value: noiseTexture ?? null } },
+        depthTest: false,
+        depthWrite: false,
+        toneMapped: false,
+        vertexShader: "varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }",
+        fragmentShader: phoneFluidFragment(next),
+      });
+      materials.set(next, material);
+      return material;
+    };
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), getSurface(mode));
     plane.frustumCulled = false;
     // Match the original direct rendering path. Avoid an intermediate texture and
     // a second, mediump sampling pass on Android/WebView GPU drivers.
@@ -292,12 +256,42 @@ export default function MobileTechScene() {
         else draw(performance.now());
       }
     };
+    changeMode.current = (next: PhoneFluidMode) => {
+      mode = next;
+      plane.material = getSurface(next);
+      element.dataset.fluidMode = mode;
+      if (!running) draw(performance.now());
+    };
+    if (options.debug) {
+      const gl = renderer.getContext();
+      const info = gl.getExtension("WEBGL_debug_renderer_info");
+      const precision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+      diagnostics.current = () => ({
+        version: PHONE_FLUID_VERSION,
+        mode,
+        pipeline: "direct",
+        renderer: info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+        fragmentHighp: precision ? { bits: precision.precision, min: precision.rangeMin, max: precision.rangeMax } : null,
+        userAgent: navigator.userAgent,
+        devicePixelRatio,
+        viewport: [innerWidth, innerHeight],
+        drawingBuffer: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+        fps: element.dataset.fps ?? "pending",
+        quality: quality.value,
+        motion: element.dataset.motion,
+        contextLost: lost,
+        programs: renderer.info.programs?.length,
+        webglError: gl.getError(),
+      });
+    }
     const configure=(next:boolean)=>{requested=next;applyMotion();};
     control.current = configure;
     const dialogObserver=new MutationObserver(applyMotion);
     dialogObserver.observe(document.body,{attributes:true,attributeFilter:["class"]});
     element.dataset.profile="phone-original";
     element.dataset.fluidPipeline="direct";
+    element.dataset.fluidVersion=PHONE_FLUID_VERSION;
+    element.dataset.fluidMode=mode;
     const onScroll = () => {
       scrollDirty = true;
       if (!running) draw(performance.now());
@@ -346,6 +340,8 @@ export default function MobileTechScene() {
     element.dataset.ready = "true";
     return () => {
       control.current = () => {};
+      changeMode.current = () => {};
+      diagnostics.current = () => ({ version: PHONE_FLUID_VERSION, ready: false });
       renderer.setAnimationLoop(null);
       observer.disconnect();
       dialogObserver.disconnect();
@@ -361,11 +357,15 @@ export default function MobileTechScene() {
       geometry.dispose();
       pointsMaterial.dispose();
       plane.geometry.dispose();
-      surface.dispose();
+      materials.forEach(material => material.dispose());
+      noiseTexture?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
   }, []);
   useEffect(() => control.current(enabled), [enabled]);
-  return <div className="tech-scene" ref={host} aria-hidden="true" />;
+  return <>
+    <div className="tech-scene" ref={host} aria-hidden="true" />
+    {options.debug && <PhoneFluidDiagnostics initialMode={options.mode} onModeChange={mode => changeMode.current(mode)} readDiagnostics={() => diagnostics.current()} />}
+  </>;
 }

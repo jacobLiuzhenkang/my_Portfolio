@@ -1,0 +1,31 @@
+.phone-fluid-diagnostics {
+  position: fixed;
+  z-index: 70;
+  inset: auto 10px max(10px, env(safe-area-inset-bottom));
+  max-height: 65dvh;
+  overflow: auto;
+  border: 1px solid #5d8998;
+  border-radius: 10px;
+  background: #09171ff5;
+  color: #edf8fa;
+  font: 13px/1.5 system-ui, sans-serif;
+  box-shadow: 0 4px 24px #0008;
+}
+.phone-fluid-diagnostics summary { padding: 12px; cursor: pointer; font-weight: 600; }
+.phone-fluid-diagnostics__body { padding: 0 12px 12px; }
+.phone-fluid-diagnostics p { margin: 0 0 8px; }
+.phone-fluid-diagnostics button {
+  min-height: 44px;
+  border: 1px solid #4d6f7b;
+  border-radius: 6px;
+  background: #102b36;
+  color: inherit;
+  padding: 7px;
+  font: inherit;
+  cursor: pointer;
+}
+.phone-fluid-diagnostics button[aria-pressed="true"] { border-color: #d3ff38; color: #d3ff38; }
+.phone-fluid-diagnostics__modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+.phone-fluid-diagnostics [role="status"] { margin-left: 8px; }
+.phone-fluid-diagnostics textarea { display: block; width: 100%; margin-top: 8px; background: #071017; color: inherit; font: 12px/1.4 monospace; }
+.phone-fluid-diagnostics small { display: block; color: #9eb6c0; margin-top: 5px; }
