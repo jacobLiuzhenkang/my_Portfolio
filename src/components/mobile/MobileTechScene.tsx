@@ -86,8 +86,6 @@ export default function MobileTechScene() {
       uPixelRatio: { value: 1 },
     };
     const scene = new THREE.Scene();
-    const fluidScene = new THREE.Scene();
-    const fluidTarget = new THREE.WebGLRenderTarget(2,2,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:false,stencilBuffer:false});
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const surface = new THREE.ShaderMaterial({
       uniforms,
@@ -121,11 +119,9 @@ export default function MobileTechScene() {
     });
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), surface);
     plane.frustumCulled = false;
-    fluidScene.add(plane);
-    const composite = new THREE.ShaderMaterial({uniforms:{uFluid:{value:fluidTarget.texture}},depthTest:false,depthWrite:false,toneMapped:false,
-      vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}",
-      fragmentShader:"precision mediump float;varying vec2 vUv;uniform sampler2D uFluid;void main(){gl_FragColor=texture2D(uFluid,vUv);}"});
-    const screen = new THREE.Mesh(plane.geometry,composite);screen.frustumCulled=false;scene.add(screen);
+    // Match the original direct rendering path. Avoid an intermediate texture and
+    // a second, mediump sampling pass on Android/WebView GPU drivers.
+    scene.add(plane);
 
     const count = 16000;
     const positions = new Float32Array(count * 3);
@@ -227,11 +223,11 @@ export default function MobileTechScene() {
     const resize = () => {
       const width = Math.max(1, element.clientWidth),
         height = Math.max(1, element.clientHeight);
-      const pixelRatio = Math.min(Math.max(devicePixelRatio || 1,1),1.4);
+      // Keep the procedural field at the same bounded CSS-pixel budget as the
+      // previous fluid pass, without an extra high-resolution composite pass.
+      const pixelRatio = Math.min(devicePixelRatio || 1, 1) * quality.value;
       renderer.setPixelRatio(pixelRatio);
       renderer.setSize(width,height,false);
-      // Preserve the original fluid field; reduce only its offscreen sampling when needed.
-      fluidTarget.setSize(Math.max(1,Math.round(width*quality.value)),Math.max(1,Math.round(height*quality.value)));
       uniforms.uAspect.value=width/height;
       uniforms.uPixelRatio.value=pixelRatio;
       geometry.setDrawRange(0,1700);
@@ -269,7 +265,6 @@ export default function MobileTechScene() {
         wake.multiplyScalar(Math.exp(-delta * 2));
       }
       uniforms.uWake.value.copy(wake);
-      renderer.setRenderTarget(fluidTarget);renderer.render(fluidScene,camera);renderer.setRenderTarget(null);
       renderer.render(scene, camera);
       statFrames++;
       if (!statStart) statStart = now;
@@ -302,6 +297,7 @@ export default function MobileTechScene() {
     const dialogObserver=new MutationObserver(applyMotion);
     dialogObserver.observe(document.body,{attributes:true,attributeFilter:["class"]});
     element.dataset.profile="phone-original";
+    element.dataset.fluidPipeline="direct";
     const onScroll = () => {
       scrollDirty = true;
       if (!running) draw(performance.now());
@@ -366,7 +362,6 @@ export default function MobileTechScene() {
       pointsMaterial.dispose();
       plane.geometry.dispose();
       surface.dispose();
-      composite.dispose();fluidTarget.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
