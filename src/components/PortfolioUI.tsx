@@ -24,6 +24,7 @@ export type ProjectView = {
   content: string;
   tags: string[];
   coverUrl: string | null;
+  coverImage?: string | null;
   gallery: string[];
   demoUrl: string | null;
   featured: boolean;
@@ -272,12 +273,27 @@ export function ProjectDialog({
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    dialog.showModal();
+    let unmounting = false;
+    if (!dialog.open) dialog.showModal();
     document.body.classList.add("dialog-open");
-    return () => document.body.classList.remove("dialog-open");
+    const handleClose = () => {
+      if (!unmounting) onCloseRef.current();
+    };
+    dialog.addEventListener("close", handleClose);
+    return () => {
+      // Drop the listener before the node goes away. A close() here can be
+      // delivered to the listener from the next mount and immediately pop history.
+      unmounting = true;
+      dialog.removeEventListener("close", handleClose);
+      document.body.classList.remove("dialog-open");
+    };
   }, []);
 
   return (
@@ -285,7 +301,6 @@ export function ProjectDialog({
       ref={ref}
       className="project-dialog pf-dialog"
       data-lenis-prevent
-      onClose={onClose}
       onClick={event =>
         event.target === event.currentTarget && ref.current?.close()
       }

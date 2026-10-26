@@ -2,9 +2,16 @@ import { usePhoneLayout } from "@/hooks/use-phone-layout";
 import { PHONE_QUERY } from "@contracts/phone-visual";
 import { projectCoverSources } from "@contracts/project-covers";
 import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
-import { useState } from "react";
+import {
+  caseCloseUsesHistoryBack,
+  caseSlugFromPath,
+  findProjectBySlug,
+  projectPath,
+  readHistoryIndex,
+} from "@/lib/project-slug";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Braces } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   PortfolioFooter,
   PortfolioHeader,
@@ -104,13 +111,42 @@ function ProjectCard({
 
 export default function Home() {
   const phone = usePhoneLayout();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const slug = caseSlugFromPath(pathname);
   const { data, isLoading, error } = trpc.content.public.useQuery();
   const [filter, setFilter] = useState("全部");
-  const [selected, setSelected] = useState<ProjectView | null>(null);
+  const openedAtIndex = useRef<number | null>(null);
+  const projects = (data?.projects as ProjectView[] | undefined) ?? [];
+  const selected = findProjectBySlug(projects, slug);
+  useLayoutEffect(() => {
+    openedAtIndex.current = slug ? readHistoryIndex() : null;
+  }, [slug]);
+  useEffect(() => {
+    if (!slug) {
+      document.title = "刘振康 · AI 产品工程师";
+      return;
+    }
+    if (selected) document.title = `${selected.title} · 刘振康`;
+  }, [selected, slug]);
+  useEffect(() => {
+    if (!slug || isLoading || error || !data?.profile || selected) return;
+    navigate("/#work", { replace: true });
+  }, [data?.profile, error, isLoading, navigate, selected, slug]);
+  const openProject = (project: ProjectView) => {
+    const path = projectPath(project);
+    if (window.location.pathname !== path) navigate(path);
+  };
+  const closeProject = () => {
+    if (caseCloseUsesHistoryBack(readHistoryIndex(), openedAtIndex.current)) {
+      navigate(-1);
+      return;
+    }
+    navigate("/#work", { replace: true });
+  };
   if (isLoading) return <PublicLoading />;
   if (error || !data?.profile) return <PublicLoading failed />;
   const { profile } = data;
-  const projects = data.projects as ProjectView[];
   const categories = [
     "全部",
     ...new Set(projects.map(project => project.category)),
@@ -215,7 +251,7 @@ export default function Home() {
                   key={project.id}
                   project={project}
                   featured
-                  onOpen={() => setSelected(project)}
+                  onOpen={() => openProject(project)}
                 />
               ))}
             </div>
@@ -230,7 +266,7 @@ export default function Home() {
                     <ProjectCard
                       key={project.id}
                       project={project}
-                      onOpen={() => setSelected(project)}
+                      onOpen={() => openProject(project)}
                     />
                   ))}
                 </div>
@@ -287,9 +323,7 @@ export default function Home() {
         </section>
       </main>
       <PortfolioFooter profile={profile} />
-      {selected && (
-        <ProjectDialog project={selected} onClose={() => setSelected(null)} />
-      )}
+      {selected && <ProjectDialog project={selected} onClose={closeProject} />}
     </div>
   );
 }

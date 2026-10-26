@@ -7,6 +7,10 @@ import PublicLayout from "./components/PublicLayout";
 const Guestbook = lazy(() => import("./pages/Guestbook"));
 const Admin = lazy(() => import("./pages/Admin"));
 
+function CaseRoute() {
+  return null;
+}
+
 export default function App() {
   const location = useLocation();
   useEffect(() => {
@@ -25,7 +29,10 @@ export default function App() {
         }
       />
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />}>
+          <Route index element={<CaseRoute />} />
+          <Route path="work/:slug" element={<CaseRoute />} />
+        </Route>
         <Route path="/growth" element={<Growth />} />
         <Route
           path="/guestbook"
