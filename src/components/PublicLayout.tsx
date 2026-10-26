@@ -1,6 +1,7 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
+import { lazy, Suspense, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useSmoothScroll } from "@/motion";
+import { isCaseSurface } from "@/lib/project-slug";
 import { SceneMotionProvider } from "./SceneMotion";
 import { useSceneMotion } from "@/hooks/use-scene-motion";
 
@@ -11,13 +12,24 @@ function PublicFrame() {
   const location = useLocation();
   const { enabled } = useSceneMotion();
   const smoothScroll = useSmoothScroll(enabled);
+  const pathRef = useRef({ path: location.pathname, key: "" });
   useLayoutEffect(() => {
-    document.title =
-      location.pathname === "/guestbook"
-        ? "留言板 — 刘振康"
-        : location.pathname === "/growth"
-          ? "我的成长 — 刘振康 · AI 产品工程师"
-          : "刘振康 · AI 产品工程师";
+    if (pathRef.current.key === location.key) return;
+    const previousPath = pathRef.current.path;
+    const preserveScroll =
+      previousPath !== location.pathname &&
+      isCaseSurface(previousPath) &&
+      isCaseSurface(location.pathname);
+    pathRef.current = { path: location.pathname, key: location.key };
+    if (!preserveScroll) {
+      document.title =
+        location.pathname === "/guestbook"
+          ? "留言板 — 刘振康"
+          : location.pathname === "/growth"
+            ? "我的成长 — 刘振康 · AI 产品工程师"
+            : "刘振康 · AI 产品工程师";
+    }
+    if (preserveScroll && !location.hash) return;
     const reset = () =>
       smoothScroll.current
         ? smoothScroll.current.scrollTo(0, { immediate: true })

@@ -37,15 +37,7 @@
       "destination": "/api"
     },
     {
-      "source": "/growth",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/guestbook",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/admin",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
