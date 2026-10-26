@@ -1075,6 +1075,10 @@ body.dialog-open .pf-scroll-telemetry {
   border-radius: 6px;
   color: var(--pf-white);
   background: #091117;
+  scrollbar-width: none;
+}
+.pf-dialog::-webkit-scrollbar {
+  display: none;
 }
 .pf-dialog::backdrop,
 .wechat-dialog::backdrop {
