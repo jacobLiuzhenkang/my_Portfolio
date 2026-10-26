@@ -382,7 +382,8 @@ export default function ProjectManager({
                   {item.category} · {item.subtitle}
                 </span>
                 <small>
-                  {item.published ? "公开" : "已隐藏"} · 排序 {item.sortOrder}
+                  {item.published ? "公开" : "已隐藏"}
+                  {item.featured ? " · 精选" : ""} · 排序 {item.sortOrder}
                 </small>
               </button>
               <button

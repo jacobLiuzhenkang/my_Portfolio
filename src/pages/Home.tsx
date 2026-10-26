@@ -2,6 +2,7 @@ import { usePhoneLayout } from "@/hooks/use-phone-layout";
 import { PHONE_QUERY } from "@contracts/phone-visual";
 import { projectCoverSources } from "@contracts/project-covers";
 import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
+import { splitFeaturedProjects } from "@/lib/featured-work";
 import {
   caseCloseUsesHistoryBack,
   caseSlugFromPath,
@@ -155,10 +156,7 @@ export default function Home() {
     filter === "全部"
       ? projects
       : projects.filter(project => project.category === filter);
-  const featured = visible.filter(project => project.featured).slice(0, 2);
-  const earlier = visible.filter(
-    project => !featured.some(item => item.id === project.id)
-  );
+  const { featured, earlier } = splitFeaturedProjects(visible);
   return (
     <div className="pf-page pf-home">
       <PortfolioHeader active="work" />
