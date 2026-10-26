@@ -6,6 +6,7 @@ import { createRouter, adminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { storage } from "./lib/storage";
 import { checkFile, makeUploadKey, registerUploadedFile, uploadPrefix } from "./lib/files";
+import { compressPdfBytes } from "./lib/pdf-compress";
 
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"]);
 
@@ -27,11 +28,12 @@ export const storageRouter = createRouter({
     if (!allowedTypes.has(input.contentType)) {
       throw new TRPCError({ code: "BAD_REQUEST", message: "仅支持 JPG、PNG、WebP、GIF 图片或 PDF" });
     }
-    const bytes = Uint8Array.from(Buffer.from(input.contentBase64, "base64"));
-    checkFile(input.contentType, bytes.length, input.purpose);
-    if (!bytes.length || bytes.length > 25 * 1024 * 1024) {
+    const received = Uint8Array.from(Buffer.from(input.contentBase64, "base64"));
+    checkFile(input.contentType, received.length, input.purpose);
+    if (!received.length || received.length > 25 * 1024 * 1024) {
       throw new TRPCError({ code: "BAD_REQUEST", message: "文件不能为空，且不能超过 25 MB" });
     }
+    const bytes = input.contentType === "application/pdf" ? (await compressPdfBytes(received)).bytes : received;
     const saved = await storage.uploadFile({
       fileContent: bytes,
       fileName: makeUploadKey(ctx.admin.id, input.name, input.purpose),
