@@ -67,7 +67,7 @@ app.use("/api/trpc/*", async (c, next) => {
   } catch {
     return c.body(null, 400);
   }
-  return /(?:\/|,)guestbook\./.test(requestPath)
+  return /(?:\/|,)(?:guestbook|analytics)\./.test(requestPath)
     ? guestbookBodyLimit(c, next)
     : adminBodyLimit(c, next);
 });

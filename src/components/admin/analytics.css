@@ -1,0 +1,100 @@
+.analytics-manager {
+  color: var(--paper);
+}
+.analytics-ranges {
+  display: flex;
+  gap: 8px;
+}
+.analytics-ranges button {
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.analytics-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.analytics-cards article,
+.analytics-chart,
+.analytics-empty {
+  background: var(--ink-900);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+}
+.analytics-cards span,
+.analytics-cards small {
+  display: block;
+  color: var(--muted);
+}
+.analytics-cards strong {
+  display: block;
+  font-size: 38px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--mint);
+}
+.analytics-cards small {
+  font-size: 12px;
+}
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.analytics-wide {
+  grid-column: 1/-1;
+}
+.analytics-chart {
+  min-width: 0;
+}
+.analytics-chart h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.analytics-chart p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+.analytics-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+.analytics-chart .recharts-default-tooltip {
+  color: var(--paper);
+}
+.analytics-chart .recharts-legend-wrapper {
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .analytics-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-chart {
+    padding: 14px;
+  }
+  .analytics-cards article {
+    padding: 16px;
+  }
+  .analytics-cards strong {
+    font-size: 30px;
+  }
+}
+
+.analytics-manager .admin-section-heading p:not(.meta-label) {
+  color: var(--muted);
+  font-size: 13px;
+}
+.analytics-chart .recharts-text {
+  fill: var(--muted);
+}
+.analytics-chart .recharts-legend-item-text {
+  overflow-wrap: anywhere;
+}

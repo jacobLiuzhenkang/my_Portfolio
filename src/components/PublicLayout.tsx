@@ -1,4 +1,5 @@
-import { lazy, Suspense, useLayoutEffect, useRef } from "react";
+import { track } from "@/lib/analytics";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useSmoothScroll } from "@/motion";
 import {
@@ -16,6 +17,13 @@ const TechScene = lazy(() => import("./TechScene"));
 function PublicFrame() {
   const location = useLocation();
   const { enabled } = useSceneMotion();
+  const analyticsPath = useRef("");
+  useEffect(() => {
+    const key = location.pathname + location.search;
+    if (analyticsPath.current === key) return;
+    analyticsPath.current = key;
+    track("page_view");
+  }, [location.pathname, location.search]);
   const smoothScroll = useSmoothScroll(enabled);
   const pathRef = useRef({ path: location.pathname, key: "" });
   useLayoutEffect(() => {
