@@ -125,19 +125,28 @@ export function isCaseSurface(pathname: string) {
   return pathname === "/" || pathname === "/work" || pathname.startsWith("/work/");
 }
 
-export function readHistoryIndex() {
-  const history = (globalThis as { history?: { state?: { idx?: unknown } | null } })
-    .history;
-  const index = history?.state?.idx;
-  return typeof index === "number" ? index : 0;
+/**
+ * Closing a case always returns to the work section.
+ * History back restores `/` without `#work` and the scroll offset from before
+ * the dialog opened, so the work list stays wherever the reader had left it.
+ */
+export function caseCloseHref() {
+  return "/#work";
 }
 
-/** A direct visit has no in-app entry to return to; closing replaces the URL instead. */
-export function caseCloseUsesHistoryBack(
-  historyIndex: number,
-  openedAtIndex: number | null
+/**
+ * Moving between the homepage and a case keeps the current offset.
+ * A hash such as `#work` asks for alignment instead.
+ */
+export function keepsStoredCaseScroll(
+  previousPath: string,
+  pathname: string,
+  hash: string
 ) {
   return (
-    openedAtIndex != null && historyIndex === openedAtIndex && historyIndex > 0
+    previousPath !== pathname &&
+    isCaseSurface(previousPath) &&
+    isCaseSurface(pathname) &&
+    hash.length === 0
   );
 }

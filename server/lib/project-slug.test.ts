@@ -2,10 +2,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  caseCloseUsesHistoryBack,
+  caseCloseHref,
   caseSlugFromPath,
   findProjectBySlug,
   isCaseSurface,
+  keepsStoredCaseScroll,
   projectPath,
   projectSlug,
 } from "../../src/lib/project-slug";
@@ -98,10 +99,18 @@ describe("case deep links", () => {
     expect(isCaseSurface("/workspace")).toBe(false);
   });
 
-  it("uses history back only for a case opened inside the current visit", () => {
-    expect(caseCloseUsesHistoryBack(2, 2)).toBe(true);
-    expect(caseCloseUsesHistoryBack(0, 0)).toBe(false);
-    expect(caseCloseUsesHistoryBack(2, 1)).toBe(false);
-    expect(caseCloseUsesHistoryBack(1, null)).toBe(false);
+  it("closes onto /#work so the work section aligns instead of restoring scroll", async () => {
+    expect(caseCloseHref()).toBe("/#work");
+    const slug = "/work/shang-ye-ping-mian-she-ji-he-ji";
+    expect(keepsStoredCaseScroll(slug, "/", "#work")).toBe(false);
+    expect(keepsStoredCaseScroll(slug, "/", "")).toBe(true);
+    expect(keepsStoredCaseScroll("/", slug, "")).toBe(true);
+    expect(keepsStoredCaseScroll("/growth", "/", "#work")).toBe(false);
+    const home = await readFile(
+      path.resolve(import.meta.dirname, "../../src/pages/Home.tsx"),
+      "utf8"
+    );
+    expect(home).toContain("navigate(caseCloseHref(), { replace: true })");
+    expect(home).not.toContain("navigate(-1)");
   });
 });

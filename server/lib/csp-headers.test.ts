@@ -13,7 +13,9 @@ const pdfSource = "/downloads/([^/]+\\.[pP][dD][fF])";
  * sensitive) for the sources above. Header routes are emitted with
  * continue:true, so two matching Content-Security-Policy values would both
  * be present and the browser would enforce the stricter one. These patterns
- * are disjoint, so a PDF response carries only frame-ancestors 'self'.
+ * are disjoint. The PDF header value itself is only `frame-ancestors 'self'`:
+ * site directives such as object-src 'none' make Chrome's built-in viewer
+ * refuse a framed PDF.
  */
 const pagePattern = /^(?:\/((?!downloads\/[^/]+\.[pP][dD][fF]$).*))$/;
 const pdfPattern = /^\/downloads(?:\/([^/]+\.[pP][dD][fF]))$/;
@@ -36,12 +38,12 @@ describe("download PDF framing policy", () => {
     expect(csp.map(rule => rule.source)).toEqual([pageSource, pdfSource]);
     const [page, pdf] = csp;
     expect(page.value).toContain("frame-ancestors 'none'");
+    expect(page.value).toContain("object-src 'none'");
     expect(page.value).not.toContain("frame-ancestors 'self'");
-    expect(pdf.value).toContain("frame-ancestors 'self'");
-    expect(pdf.value).not.toContain("frame-ancestors 'none'");
-    expect(
-      page.value.replace("frame-ancestors 'none'", "frame-ancestors 'self'")
-    ).toBe(pdf.value);
+    expect(pdf.value).toBe("frame-ancestors 'self'");
+    expect(pdf.value).not.toMatch(
+      /default-src|script-src|style-src|img-src|font-src|connect-src|worker-src|base-uri|form-action|object-src/
+    );
 
     const catchAll = headers.find(rule => rule.source === "/:path*");
     expect(

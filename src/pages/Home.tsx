@@ -5,13 +5,12 @@ import { projectCoverSources } from "@contracts/project-covers";
 import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
 import { splitFeaturedProjects } from "@/lib/featured-work";
 import {
-  caseCloseUsesHistoryBack,
+  caseCloseHref,
   caseSlugFromPath,
   findProjectBySlug,
   projectPath,
-  readHistoryIndex,
 } from "@/lib/project-slug";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Braces } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
@@ -119,12 +118,8 @@ export default function Home() {
   const slug = caseSlugFromPath(pathname);
   const { data, isLoading, error } = trpc.content.public.useQuery();
   const [filter, setFilter] = useState("全部");
-  const openedAtIndex = useRef<number | null>(null);
   const projects = (data?.projects as ProjectView[] | undefined) ?? [];
   const selected = findProjectBySlug(projects, slug);
-  useLayoutEffect(() => {
-    openedAtIndex.current = slug ? readHistoryIndex() : null;
-  }, [slug]);
   useEffect(() => {
     if (!slug) {
       document.title = "刘振康 · AI 产品工程师";
@@ -134,18 +129,14 @@ export default function Home() {
   }, [selected, slug]);
   useEffect(() => {
     if (!slug || isLoading || error || !data?.profile || selected) return;
-    navigate("/#work", { replace: true });
+    navigate(caseCloseHref(), { replace: true });
   }, [data?.profile, error, isLoading, navigate, selected, slug]);
   const openProject = (project: ProjectView) => {
     const path = projectPath(project, projects);
     if (window.location.pathname !== path) navigate(path);
   };
   const closeProject = () => {
-    if (caseCloseUsesHistoryBack(readHistoryIndex(), openedAtIndex.current)) {
-      navigate(-1);
-      return;
-    }
-    navigate("/#work", { replace: true });
+    navigate(caseCloseHref(), { replace: true });
   };
   if (isLoading) return <PublicLoading />;
   if (error || !data?.profile) return <PublicLoading failed />;
