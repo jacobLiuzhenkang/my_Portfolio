@@ -1,16 +1,11 @@
-/** Shareable case URLs use `/work/:slug`. The slug prefers the local cover folder. */
+/**
+ * Shareable case URLs use `/work/:slug`.
+ * The slug is slugified from the title (ASCII runs plus Mandarin pinyin).
+ * It does not depend on a cover folder, and it never falls back to `p` + id.
+ */
+import { pinyinOf } from "./pinyin-dict";
 
-const COVER_FOLDER = /\/images\/([a-z0-9-]+)\//i;
-
-const TITLE_SLUGS: Array<[RegExp, string]> = [
-  [/viform/i, "viform"],
-  [/sac|微光成炬/, "sac"],
-  [/memoring/i, "memoring"],
-  [/食刻/, "shike"],
-  [/到家/, "seashine"],
-  [/IP\s*形象|吉祥物/, "ip"],
-  [/平面设计/, "other"],
-];
+const SLUG_MAX = 80;
 
 export type CaseSlugSource = {
   id: number;
@@ -19,30 +14,84 @@ export type CaseSlugSource = {
   coverImage?: string | null;
 };
 
-function folderSlug(value: string | null | undefined) {
-  if (!value || /^https?:\/\//i.test(value)) return null;
-  const folder = value.match(COVER_FOLDER)?.[1]?.toLowerCase();
-  return folder && /^[a-z0-9-]{2,40}$/.test(folder) ? folder : null;
-}
-
-function titleSlug(title: string) {
-  for (const [pattern, slug] of TITLE_SLUGS) {
-    if (pattern.test(title)) return slug;
+function stableToken(value: string) {
+  let hash = 5381;
+  for (const char of value) {
+    hash = Math.imul(hash, 33) ^ (char.codePointAt(0) ?? 0);
   }
-  return null;
+  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
-export function projectSlug(project: CaseSlugSource) {
-  return (
-    folderSlug(project.coverImage) ??
-    folderSlug(project.coverUrl) ??
-    titleSlug(project.title) ??
-    `p${project.id}`
-  );
+/** ASCII letters and digits stay together; each Han character becomes one syllable. */
+function slugifyTitle(title: string) {
+  const normalized = title.normalize("NFKC").normalize("NFKD").replace(/\p{M}/gu, "");
+  const parts: string[] = [];
+  let ascii = "";
+  const flushAscii = () => {
+    const token = ascii.toLowerCase().replace(/[^a-z0-9]+/g, "");
+    if (token) parts.push(token);
+    ascii = "";
+  };
+  for (const char of normalized) {
+    if (/[A-Za-z0-9]/.test(char)) {
+      ascii += char;
+      continue;
+    }
+    flushAscii();
+    const reading = pinyinOf(char);
+    if (reading) parts.push(reading);
+  }
+  flushAscii();
+  const slug = parts.join("-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  return slug.length > SLUG_MAX
+    ? slug.slice(0, SLUG_MAX).replace(/-[^-]*$/, "")
+    : slug;
 }
 
-export function projectPath(project: CaseSlugSource) {
-  return `/work/${projectSlug(project)}`;
+function baseSlug(project: CaseSlugSource) {
+  return slugifyTitle(project.title) || `case-${stableToken(project.title.normalize("NFKC"))}`;
+}
+
+function claim(base: string, used: Set<string>) {
+  let generation = 1;
+  while (generation < 1000) {
+    const suffix = generation === 1 ? "" : `-${generation}`;
+    const trimmed = base.slice(0, SLUG_MAX - suffix.length).replace(/-+$/g, "");
+    const slug = `${trimmed}${suffix}`;
+    if (slug && !used.has(slug)) {
+      used.add(slug);
+      return slug;
+    }
+    generation += 1;
+  }
+  const suffix = `-${stableToken(base)}`;
+  const slug = `${base.slice(0, SLUG_MAX - suffix.length).replace(/-+$/g, "")}${suffix}`;
+  used.add(slug);
+  return slug;
+}
+
+/** Earliest id keeps the base slug. Later collisions append -2, -3, and so on. */
+export function projectSlug(
+  project: CaseSlugSource,
+  projects: readonly CaseSlugSource[] = [project]
+) {
+  const list = projects.some(item => item.id === project.id)
+    ? projects
+    : [...projects, project];
+  const used = new Set<string>();
+  const assigned = new Map<number, string>();
+  for (const item of [...list].sort((a, b) => a.id - b.id)) {
+    if (assigned.has(item.id)) continue;
+    assigned.set(item.id, claim(baseSlug(item), used));
+  }
+  return assigned.get(project.id) ?? claim(baseSlug(project), used);
+}
+
+export function projectPath(
+  project: CaseSlugSource,
+  projects?: readonly CaseSlugSource[]
+) {
+  return `/work/${projectSlug(project, projects)}`;
 }
 
 export function caseSlugFromPath(pathname: string) {
@@ -68,12 +117,7 @@ export function findProjectBySlug<T extends CaseSlugSource>(
   }
   const key = decoded.trim().toLowerCase();
   if (!key) return undefined;
-  return projects.find(project => {
-    const canonical = projectSlug(project);
-    return (
-      canonical === key || String(project.id) === key || `p${project.id}` === key
-    );
-  });
+  return projects.find(project => projectSlug(project, projects) === key);
 }
 
 /** Home and a case link are the same page with a modal, so scrolling should stay put. */

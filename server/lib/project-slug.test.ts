@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   caseCloseUsesHistoryBack,
@@ -18,55 +20,79 @@ const projects = [
   { id: 7, title: "SAC · 微光成炬", coverImage: "/images/sac/home.png" },
 ];
 
+const readable = [
+  "xia-shang-dao-jia-shi-jue-sheng-ji",
+  "memoring-zhi-neng-zhi-huan",
+  "shi-ke-shi-pu-she-qu-0-1",
+  "xia-shang-ip-xing-xiang-she-ji",
+  "shang-ye-ping-mian-she-ji-he-ji",
+  "viform-ai-chuang-zuo-gong-zuo-tai",
+  "sac-wei-guang-cheng-ju",
+];
+
 describe("case deep links", () => {
-  it("builds stable slugs from the local cover folder", () => {
-    expect(projects.map(projectSlug)).toEqual([
-      "seashine",
-      "memoring",
-      "shike",
-      "ip",
-      "other",
-      "viform",
-      "sac",
-    ]);
-    expect(projectPath(projects[5])).toBe("/work/viform");
-    expect(caseSlugFromPath("/work/viform")).toBe("viform");
-    expect(caseSlugFromPath("/work/SAC/")).toBe("SAC");
+  it("builds a stable readable slug from the title", () => {
+    expect(projects.map(project => projectSlug(project, projects))).toEqual(readable);
+    expect(projectPath(projects[5], projects)).toBe("/work/viform-ai-chuang-zuo-gong-zuo-tai");
+    expect(caseSlugFromPath("/work/sac-wei-guang-cheng-ju")).toBe("sac-wei-guang-cheng-ju");
+    expect(caseSlugFromPath("/work/SAC-WEI-GUANG-CHENG-JU/")).toBe("SAC-WEI-GUANG-CHENG-JU");
     expect(caseSlugFromPath("/growth")).toBeUndefined();
     expect(caseSlugFromPath("/work")).toBeUndefined();
   });
 
-  it("keeps a known project shareable after the cover becomes a remote file", () => {
+  it("keeps the same slug when the cover is missing or remote", () => {
     expect(
-      projectSlug({
-        id: 6,
-        title: "VIFORM · AI 创作工作台",
-        coverImage: null,
-        coverUrl: "https://example.blob.vercel-storage.com/private/cover.png",
-      })
-    ).toBe("viform");
+      projectSlug(
+        {
+          id: 6,
+          title: "VIFORM · AI 创作工作台",
+          coverImage: null,
+          coverUrl: "https://example.blob.vercel-storage.com/private/cover.png",
+        },
+        projects
+      )
+    ).toBe("viform-ai-chuang-zuo-gong-zuo-tai");
+    expect(projectSlug({ id: 12, title: "新的委托", coverUrl: null })).toBe("xin-de-wei-tuo");
   });
 
-  it("falls back to a stable id slug for projects without a known name", () => {
-    expect(projectSlug({ id: 12, title: "新的委托", coverUrl: null })).toBe("p12");
-    expect(
-      findProjectBySlug(
-        [{ id: 12, title: "新的委托", coverUrl: null }],
-        "p12"
-      )?.id
-    ).toBe(12);
+  it("disambiguates identical titles by ascending id and never uses p + id", () => {
+    const twins = [
+      { id: 9, title: "夏商到家视觉升级" },
+      { id: 3, title: "夏商到家视觉升级" },
+    ];
+    expect(projectSlug(twins[0], twins)).toBe("xia-shang-dao-jia-shi-jue-sheng-ji-2");
+    expect(projectSlug(twins[1], twins)).toBe("xia-shang-dao-jia-shi-jue-sheng-ji");
+    const blank = { id: 12, title: "···" };
+    expect(projectSlug(blank)).toMatch(/^case-[0-9a-f]{8}$/);
+    expect(projectSlug(blank)).not.toBe(`p${blank.id}`);
+    expect(projects.map(project => projectSlug(project, projects)).join(" ")).not.toMatch(
+      /(?:^|\s)p\d+(?:\s|$)/
+    );
   });
 
-  it("resolves the canonical slug, the id, and an unknown value", () => {
-    expect(findProjectBySlug(projects, "SAC")?.title).toContain("微光成炬");
-    expect(findProjectBySlug(projects, "7")?.id).toBe(7);
+  it("resolves only the canonical title slug", () => {
+    expect(findProjectBySlug(projects, "SAC-WEI-GUANG-CHENG-JU")?.title).toContain("微光成炬");
+    expect(findProjectBySlug(projects, "7")).toBeUndefined();
+    expect(findProjectBySlug(projects, "p7")).toBeUndefined();
+    expect(findProjectBySlug(projects, "viform")).toBeUndefined();
     expect(findProjectBySlug(projects, "missing")).toBeUndefined();
-    expect(new Set(projects.map(projectSlug)).size).toBe(projects.length);
+    expect(new Set(projects.map(project => projectSlug(project, projects))).size).toBe(
+      projects.length
+    );
+  });
+
+  it("does not keep a numeric id fallback in the slug module", async () => {
+    const source = await readFile(
+      path.resolve(import.meta.dirname, "../../src/lib/project-slug.ts"),
+      "utf8"
+    );
+    expect(source.includes("p${")).toBe(false);
+    expect(source).not.toMatch(/\/work\/p\\d/);
   });
 
   it("treats the home page and case links as one surface", () => {
     expect(isCaseSurface("/")).toBe(true);
-    expect(isCaseSurface("/work/viform")).toBe(true);
+    expect(isCaseSurface("/work/viform-ai-chuang-zuo-gong-zuo-tai")).toBe(true);
     expect(isCaseSurface("/growth")).toBe(false);
     expect(isCaseSurface("/guestbook")).toBe(false);
     expect(isCaseSurface("/workspace")).toBe(false);

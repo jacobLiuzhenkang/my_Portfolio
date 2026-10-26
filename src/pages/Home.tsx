@@ -134,7 +134,7 @@ export default function Home() {
     navigate("/#work", { replace: true });
   }, [data?.profile, error, isLoading, navigate, selected, slug]);
   const openProject = (project: ProjectView) => {
-    const path = projectPath(project);
+    const path = projectPath(project, projects);
     if (window.location.pathname !== path) navigate(path);
   };
   const closeProject = () => {
