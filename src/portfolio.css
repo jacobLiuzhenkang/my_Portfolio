@@ -27,6 +27,11 @@
 }
 html:has(.pf-shell) {
   scroll-behavior: auto;
+  scrollbar-width: none;
+}
+/* Hide the public page's scrollbar without disabling native scrolling. */
+html:has(.pf-shell)::-webkit-scrollbar {
+  display: none;
 }
 body:has(.pf-shell):not(.dialog-open) {
   overflow-x: clip;
