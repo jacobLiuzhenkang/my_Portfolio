@@ -6,7 +6,7 @@ import {
   anchorScrollTop,
   lenisAnchorOffset,
 } from "@/lib/anchor-scroll";
-import { isCaseSurface } from "@/lib/project-slug";
+import { isCaseSurface, keepsStoredCaseScroll } from "@/lib/project-slug";
 import { SceneMotionProvider } from "./SceneMotion";
 import { useSceneMotion } from "@/hooks/use-scene-motion";
 
@@ -34,7 +34,10 @@ function PublicFrame() {
             ? "我的成长 — 刘振康 · AI 产品工程师"
             : "刘振康 · AI 产品工程师";
     }
-    if (preserveScroll && !location.hash) return;
+    if (
+      keepsStoredCaseScroll(previousPath, location.pathname, location.hash)
+    )
+      return;
     const reset = () =>
       smoothScroll.current
         ? smoothScroll.current.scrollTo(0, { immediate: true })
