@@ -1,5 +1,6 @@
 import { usePhoneLayout } from "@/hooks/use-phone-layout";
 import { PHONE_QUERY } from "@contracts/phone-visual";
+import { displayCoverUrl } from "@contracts/pdf-asset";
 import { projectCoverSources } from "@contracts/project-covers";
 import PhoneHomeHero from "@/components/mobile/PhoneHomeHero";
 import { splitFeaturedProjects } from "@/lib/featured-work";
@@ -39,7 +40,8 @@ function ProjectCard({
   onOpen: () => void;
 }) {
   const status = project.tags.find(tag => /验证|审阅|迭代|上线/.test(tag));
-  const cover = projectCoverSources(project.coverUrl);
+  const coverUrl = displayCoverUrl(project.coverUrl);
+  const cover = projectCoverSources(coverUrl);
   return (
     <article className={`pf-project${featured ? " is-featured" : ""}`}>
       <button
@@ -47,14 +49,14 @@ function ProjectCard({
         onClick={onOpen}
         aria-label={`查看 ${project.title} 项目详情`}
       >
-        {project.coverUrl ? (
+        {coverUrl ? (
           <picture>
             {cover && <>
               <source media={PHONE_QUERY} srcSet={cover.mobile} />
               <source media="(min-width: 1200px)" srcSet={cover.wide} />
             </>}
             <img
-              src={cover?.desktop ?? project.coverUrl}
+              src={cover?.desktop ?? coverUrl}
               alt={`${project.title} ${cover ? "项目封面" : "实际项目画面"}`}
               width={1600}
               height={1000}

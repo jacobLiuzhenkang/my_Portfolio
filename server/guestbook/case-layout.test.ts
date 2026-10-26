@@ -3,10 +3,12 @@ import { describe, it, expect } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import CaseStudy from "../../src/components/CaseStudy";
+import CasePdf from "../../src/components/CasePdf";
 import {
   inlineImageSources,
   recentCaseLayout,
 } from "../../contracts/project-content";
+import { isPdfReference } from "../../contracts/pdf-asset";
 describe("project text and image relationships", () => {
   it("keeps every old inline picture between its corresponding sections without duplicate galleries", async () => {
     for (let id = 1; id <= 5; id++) {
@@ -14,7 +16,9 @@ describe("project text and image relationships", () => {
         "public/posts/project" + id + ".md",
         "utf8"
       );
-      const images = [...inlineImageSources(source)];
+      const images = [...inlineImageSources(source)].filter(
+        src => !isPdfReference(src)
+      );
       const html = renderToStaticMarkup(
         createElement(CaseStudy, {
           content: source,
@@ -22,7 +26,13 @@ describe("project text and image relationships", () => {
           title: "Project",
         })
       );
-      expect((html.match(/<img\s/g) || []).length).toBe(images.length);
+      const shown = [...html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"/g)]
+        .map(match => match[1])
+        .filter(src => !src.endsWith(".preview.webp"));
+      expect(shown).toEqual(images);
+      expect(html).not.toMatch(
+        /\b(?:src|href|data)="[^"]+\.pdf(?:[?#][^"]*)?"/i
+      );
       for (let i = 1; i < images.length; i++)
         expect(html.indexOf(images[i])).toBeGreaterThan(
           html.indexOf(images[i - 1])
@@ -71,5 +81,45 @@ describe("project text and image relationships", () => {
       })
     );
     expect((html.match(/<img\s/g) || []).length).toBe(1);
+  });
+  it("shows a cover for a case PDF and does not request the file until it is opened", () => {
+    const html = renderToStaticMarkup(
+      createElement(CaseStudy, {
+        content:
+          "### 案例文档\n\n[商业平面设计合集](/downloads/portfolio-2025.pdf)\n\n![说明](/images/other/1.webp)",
+        gallery: [
+          "/images/other/1.webp",
+          "/downloads/portfolio-2025.pdf",
+          "https://files.example/deck.pdf",
+        ],
+        title: "平面",
+      })
+    );
+    expect(html).toContain("/downloads/portfolio-2025.preview.webp");
+    expect(html).toContain("查看完整 PDF");
+    expect(html).toContain('loading="lazy"');
+    expect(html).not.toContain("<iframe");
+    expect(html).not.toMatch(/\b(?:src|href|data)="[^"]+\.pdf/i);
+    expect(html).not.toContain("https://files.example/deck.preview.webp");
+    expect(html.match(/查看完整 PDF/g)?.length).toBe(2);
+    const opened = renderToStaticMarkup(
+      createElement(CasePdf, {
+        href: "/downloads/portfolio-2025.pdf",
+        label: "商业平面设计合集",
+        initiallyOpen: true,
+      })
+    );
+    expect(opened).toContain(
+      '<iframe class="case-pdf-frame" title="商业平面设计合集" src="/downloads/portfolio-2025.pdf"'
+    );
+    const external = renderToStaticMarkup(
+      createElement(CasePdf, {
+        href: "https://files.example/deck.pdf",
+        label: "外链",
+        initiallyOpen: true,
+      })
+    );
+    expect(external).not.toContain("<iframe");
+    expect(external).toContain('href="https://files.example/deck.pdf"');
   });
 });

@@ -38,6 +38,25 @@ docker compose restart web
 
 `/api/resume/download` 下载，`/api/resume/download?preview=1` 预览。没有配置平台对象存储时使用随站 PDF；已关联且可访问的平台简历仍沿用原存储路径。后台内容变更后需重新生成 PDF。
 
+## 案例 PDF
+
+案例正文里的 PDF 链接，或图集中的 `.pdf` 地址，不会随首页或案例弹层预取。同目录封面 `文件名.preview.webp` 先显示；没有封面时用占位。读者点击「查看完整 PDF」后才请求全文。站内路径在弹层里阅读，外链在新标签打开。内容安全策略不允许用 `<object>` / `<embed>` 嵌入 PDF。
+
+超过 1.5 MB 的文件用仓库脚本压缩，并写出封面。需要 Ghostscript；封面优先用 `cwebp`，否则用已安装的 sharp。脚本只在结果更小且仍是合法 PDF 时替换原文件。直传后台不会在浏览器里重编码，上传前先压缩。
+
+```sh
+npm run pdf:compress -- public/downloads/portfolio-2025.pdf
+```
+
+没有本机 Ghostscript 时，可以用一次性容器（不把生成工具装进站点镜像）：
+
+```sh
+docker run --rm -v "$PWD:/src" -w /src node:22-bookworm-slim \
+  bash -lc 'apt-get update && apt-get install -y ghostscript webp && node scripts/compress-case-pdf.mjs public/downloads/portfolio-2025.pdf'
+```
+
+本地种子里的「商业平面设计合集」引用 `/downloads/portfolio-2025.pdf`。已有数据库不会被种子覆盖；要在现有案例里验证，把该地址写进正文或图集即可。生产正文不会因部署而改写。
+
 ## 检查
 
 ```sh

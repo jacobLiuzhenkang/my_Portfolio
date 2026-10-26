@@ -1,5 +1,19 @@
+import type { ReactNode } from "react";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import { caseMarkdown, inlineImageSources } from "@contracts/project-content";
+import { isPdfReference, pdfLabel } from "@contracts/pdf-asset";
+import CasePdf from "./CasePdf";
+
+function nodeText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join("");
+  if (node && typeof node === "object" && "props" in node) {
+    const props = node.props as { children?: ReactNode };
+    return nodeText(props.children);
+  }
+  return "";
+}
+
 export default function CaseStudy({
   content,
   gallery,
@@ -11,7 +25,15 @@ export default function CaseStudy({
 }) {
   const body = caseMarkdown(content);
   const referenced = inlineImageSources(body);
+  for (const match of body.matchAll(/\[[^\]]*\]\(\s*([^)\s]+)\s*\)/g)) {
+    if (isPdfReference(match[1])) referenced.add(match[1]);
+  }
   const remaining = gallery.filter(src => !referenced.has(src));
+  const extraLabel = remaining.every(isPdfReference)
+    ? "案例 PDF"
+    : remaining.some(isPdfReference)
+      ? "补充图片与 PDF"
+      : "补充图片";
   return (
     <div className="project-story case-study">
       <Markdown
@@ -37,8 +59,13 @@ export default function CaseStudy({
           return safe && /^(?:https?:\/\/|\/[^/]|#)/.test(safe) ? safe : "";
         }}
         components={{
-          img: ({ src, alt }) =>
-            src ? (
+          img: ({ src, alt }) => {
+            if (!src) return null;
+            if (isPdfReference(src)) {
+              const caption = alt && !/^配图\d+$/.test(alt) ? alt : "";
+              return <CasePdf href={src} label={caption || pdfLabel(src)} />;
+            }
+            return (
               <span className="case-image">
                 <img
                   src={src}
@@ -48,12 +75,19 @@ export default function CaseStudy({
                 />
                 {alt && !/^配图\d+$/.test(alt) && <small>{alt}</small>}
               </span>
-            ) : null,
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          ),
+            );
+          },
+          a: ({ href, children }) =>
+            href && isPdfReference(href) ? (
+              <CasePdf
+                href={href}
+                label={nodeText(children).trim() || pdfLabel(href)}
+              />
+            ) : (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            ),
         }}
       >
         {body}
@@ -61,18 +95,26 @@ export default function CaseStudy({
       {remaining.length > 0 && (
         <section
           className="project-gallery case-extra-gallery"
-          aria-label="补充项目图片"
+          aria-label={extraLabel}
         >
-          <h3>补充图片</h3>
-          {remaining.map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={title + " 补充图片 " + (index + 1)}
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
+          <h3>{extraLabel}</h3>
+          {remaining.map((src, index) =>
+            isPdfReference(src) ? (
+              <CasePdf
+                key={src}
+                href={src}
+                label={pdfLabel(src, title + " PDF")}
+              />
+            ) : (
+              <img
+                key={src}
+                src={src}
+                alt={title + " 补充图片 " + (index + 1)}
+                loading="lazy"
+                decoding="async"
+              />
+            )
+          )}
         </section>
       )}
     </div>

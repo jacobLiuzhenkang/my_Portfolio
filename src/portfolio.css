@@ -1876,6 +1876,17 @@ body.dialog-open .pf-scroll-telemetry {
   .case-study p:has(.case-image) {
     margin-block: 22px 30px;
   }
+  .case-pdf {
+    margin: 22px 0 30px;
+  }
+  .case-pdf button,
+  .case-pdf-open,
+  .case-pdf-status {
+    margin-left: 0;
+  }
+  .case-pdf-frame {
+    height: min(68vh, 720px);
+  }
 }
 .pf-dialog .case-study > :is(h2, h3) {
   margin-top: 44px;
@@ -1891,6 +1902,89 @@ body.dialog-open .pf-scroll-telemetry {
 }
 .case-study ol {
   list-style: decimal;
+}
+.case-pdf {
+  display: block;
+  max-width: 800px;
+  margin: 28px 0 36px;
+}
+.project-gallery .case-pdf {
+  max-width: none;
+}
+.case-pdf-sheet {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--pf-line);
+  background: linear-gradient(160deg, #123746 0%, #091117 62%);
+  color: var(--pf-cyan);
+}
+.case-pdf-sheet img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.case-pdf-placeholder {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 42px 16px;
+  font-family: var(--pf-mono, ui-monospace, monospace);
+  letter-spacing: 0.16em;
+}
+.case-pdf-placeholder b {
+  font-size: 13px;
+  font-weight: 500;
+}
+.case-pdf-placeholder small {
+  color: var(--pf-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.case-pdf-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 12px;
+}
+.case-pdf-meta strong {
+  color: var(--pf-white);
+  font-weight: 600;
+}
+.case-pdf-meta > span:not(.case-pdf-status) {
+  color: var(--pf-dim);
+  font-size: 13px;
+}
+.case-study .case-pdf-open {
+  text-decoration: none;
+}
+.case-pdf button,
+.case-pdf-open,
+.case-pdf-status {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 14px;
+  border: 1px solid var(--pf-line);
+  color: var(--pf-cyan);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+}
+.case-pdf button {
+  cursor: pointer;
+}
+.case-pdf-frame {
+  display: block;
+  width: 100%;
+  height: min(72vh, 820px);
+  margin-top: 14px;
+  border: 1px solid var(--pf-line);
+  background: #061016;
 }
 @media (max-width: 760px) {
   .pf-dialog .case-study > :is(h2, h3) {

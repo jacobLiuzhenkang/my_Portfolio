@@ -1,5 +1,6 @@
 import { lazy, Suspense, useRef, useState } from "react";
 import { ImagePlus, Plus, Trash2 } from "lucide-react";
+import { displayCoverUrl } from "@contracts/pdf-asset";
 import { trpc } from "@/providers/trpc-client";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import {
@@ -102,6 +103,7 @@ function ProjectForm({
   const set = (key: keyof FormState) => (value: string) =>
     setForm(old => ({ ...old, [key]: value }));
   const pending = create.isPending || update.isPending || upload.isPending;
+  const shownCover = displayCoverUrl(coverUrl);
   const data = {
     title: form.title,
     subtitle: form.subtitle,
@@ -131,8 +133,8 @@ function ProjectForm({
         <div className="cover-preview">
           {form.coverKey && uploadHint ? (
             <span>新封面已上传，保存后生效</span>
-          ) : coverUrl ? (
-            <img src={coverUrl} alt="当前封面" />
+          ) : shownCover ? (
+            <img src={shownCover} alt="当前封面" />
           ) : (
             <span>暂无封面</span>
           )}
@@ -220,7 +222,8 @@ function ProjectForm({
         />
         <small>
           标题用
-          ###，图片标记放在对应文字之后。可从下方选择图集图片，插入当前光标位置。
+          ###，图片标记放在对应文字之后。可从下方选择图集图片，插入当前光标位置。PDF
+          链接只会显示封面，全文在读者打开后才加载。
         </small>
       </label>
       <div className="case-editor-tools">
@@ -287,7 +290,7 @@ function ProjectForm({
         onChange={set("galleryText")}
         textarea
         rows={5}
-        hint="每行一个，例如 /images/memoring/1.webp"
+        hint="每行一个图片或 PDF，例如 /images/memoring/1.webp 或 /downloads/portfolio-2025.pdf。PDF 不随案例预取。"
       />
       <Field
         label="封面图片地址"
