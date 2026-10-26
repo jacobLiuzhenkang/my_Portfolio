@@ -172,7 +172,7 @@ export default function Home() {
             <div className="pf-hero-copy">
               <p className="pf-identity">
                 <span className="pf-live-dot" />
-                {profile.fullName}
+                <strong>{profile.fullName}</strong>
                 <span className="pf-identity-divider">/</span>
                 {profile.role}
               </p>

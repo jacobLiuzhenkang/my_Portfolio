@@ -340,6 +340,7 @@ export function ProjectDialog({
               content={project.content}
               gallery={project.gallery}
               title={project.title}
+              description={project.description}
             />
           </Suspense>
         </div>
