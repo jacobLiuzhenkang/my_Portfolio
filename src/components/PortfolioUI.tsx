@@ -284,7 +284,11 @@ export function ProjectDialog({
     if (!dialog.open) dialog.showModal();
     document.body.classList.add("dialog-open");
     const handleClose = () => {
-      if (!unmounting) onCloseRef.current();
+      if (unmounting) return;
+      // Drop the scroll lock before navigation. Lenis is stopped and
+      // overflow is hidden while it remains, so /#work cannot stick.
+      document.body.classList.remove("dialog-open");
+      onCloseRef.current();
     };
     dialog.addEventListener("close", handleClose);
     return () => {
