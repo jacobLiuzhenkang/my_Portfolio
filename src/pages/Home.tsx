@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { usePhoneLayout } from "@/hooks/use-phone-layout";
 import { PHONE_QUERY } from "@contracts/phone-visual";
 import { displayCoverUrl } from "@contracts/pdf-asset";
@@ -10,7 +11,7 @@ import {
   findProjectBySlug,
   projectPath,
 } from "@/lib/project-slug";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Braces } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
@@ -131,6 +132,13 @@ export default function Home() {
     if (!slug || isLoading || error || !data?.profile || selected) return;
     navigate(caseCloseHref(), { replace: true });
   }, [data?.profile, error, isLoading, navigate, selected, slug]);
+  const trackedCase = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const key = selected ? slug : undefined;
+    if (key && trackedCase.current !== key)
+      track("case_open", { projectSlug: key });
+    trackedCase.current = key;
+  }, [selected?.id, slug]);
   const openProject = (project: ProjectView) => {
     const path = projectPath(project, projects);
     if (window.location.pathname !== path) navigate(path);

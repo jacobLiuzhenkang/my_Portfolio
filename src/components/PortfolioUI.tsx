@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -325,6 +326,7 @@ export function ProjectDialog({
             <a
               className="text-link"
               href={project.demoUrl}
+              onClick={() => track("outbound_click")}
               target="_blank"
               rel="noreferrer"
             >

@@ -97,3 +97,4 @@ export type Project = typeof projects.$inferSelect;
 export type StoredFile = typeof storedFiles.$inferSelect;
 
 export * from "./guestbook-schema";
+export * from './analytics-schema';

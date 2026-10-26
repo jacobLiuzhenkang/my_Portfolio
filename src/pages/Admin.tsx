@@ -1,5 +1,7 @@
+import AnalyticsManager from "@/components/admin/AnalyticsManager";
 import { useEffect, useState } from "react";
 import {
+  BarChart3,
   ArrowLeft,
   BriefcaseBusiness,
   FolderLock,
@@ -116,6 +118,7 @@ function AuthPanel({
 }
 
 const tabs = [
+  { id: "analytics", label: "数据", icon: BarChart3 },
   { id: "profile", label: "简历正文", icon: UserRound },
   { id: "experience", label: "工作经历", icon: BriefcaseBusiness },
   { id: "projects", label: "作品管理", icon: Images },
@@ -128,9 +131,11 @@ type Tab = (typeof tabs)[number]["id"];
 export default function Admin() {
   const status = trpc.auth.status.useQuery();
   const [tab, setTab] = useState<Tab>(() =>
-    new URLSearchParams(window.location.search).get("tab") === "guestbook"
-      ? "guestbook"
-      : "profile"
+    new URLSearchParams(window.location.search).get("tab") === "analytics"
+      ? "analytics"
+      : new URLSearchParams(window.location.search).get("tab") === "guestbook"
+        ? "guestbook"
+        : "profile"
   );
   const [notice, setNotice] = useState<{
     type: "success" | "error";
@@ -245,6 +250,7 @@ export default function Admin() {
             </button>
           ))}
         </div>
+        {tab === "analytics" && <AnalyticsManager />}
         {content.isLoading && (
           <div className="admin-content-loading">
             <span className="status-dot" />

@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { canEmbedPdf, pdfLabel, pdfPreviewSource } from "@contracts/pdf-asset";
 
@@ -61,6 +62,7 @@ export default function CasePdf({
           title={title}
           src={href}
           loading="lazy"
+          onLoad={() => track("pdf_view")}
         />
       ) : null}
     </span>
