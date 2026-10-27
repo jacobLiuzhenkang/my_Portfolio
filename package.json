@@ -18,7 +18,8 @@
     "db:push": "drizzle-kit push",
     "guestbook:migrate": "node scripts/migrate-guestbook.mjs",
     "cases:restore": "node scripts/restore-case-layout.mjs",
-    "pdf:compress": "node scripts/compress-case-pdf.mjs"
+    "pdf:compress": "node scripts/compress-case-pdf.mjs",
+    "guestbook-messages:migrate": "node scripts/migrate-guestbook-messages.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "2.0.78",

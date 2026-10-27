@@ -1,3 +1,4 @@
+import { contactRouter } from "./contact/router";
 import { analyticsRouter } from "./analytics/router";
 import { guestbookRouter } from "./guestbook/router";
 import { authRouter } from "./authRouter";
@@ -7,6 +8,7 @@ import { storageRouter } from "./storageRouter";
 
 export const appRouter = createRouter({
   analytics: analyticsRouter,
+  contact: contactRouter,
   guestbook: guestbookRouter,
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,

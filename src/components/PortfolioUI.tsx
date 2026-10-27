@@ -1,3 +1,4 @@
+import ContactForm from "./ContactForm";
 import { track } from "@/lib/analytics";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
@@ -412,6 +413,7 @@ export function PortfolioFooter({ profile }: { profile: ProfileContact }) {
             <span>{profile.email}</span>
             <ArrowUpRight />
           </a>
+          <ContactForm />
           <div className="pf-footer-bottom">
             <p>
               <i /> {profile.fullName} / {profile.englishName}

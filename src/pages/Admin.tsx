@@ -1,3 +1,4 @@
+import ContactMessagesManager from "@/components/admin/ContactMessagesManager";
 import AnalyticsManager from "@/components/admin/AnalyticsManager";
 import { useEffect, useState } from "react";
 import {
@@ -123,6 +124,7 @@ const tabs = [
   { id: "experience", label: "工作经历", icon: BriefcaseBusiness },
   { id: "projects", label: "作品管理", icon: Images },
   { id: "files", label: "文件与 PDF", icon: FolderLock },
+  { id: "contact", label: "联系留言", icon: Images },
   { id: "guestbook", label: "留言管理", icon: Images },
   { id: "account", label: "账号安全", icon: KeyRound },
 ] as const;
@@ -131,11 +133,13 @@ type Tab = (typeof tabs)[number]["id"];
 export default function Admin() {
   const status = trpc.auth.status.useQuery();
   const [tab, setTab] = useState<Tab>(() =>
-    new URLSearchParams(window.location.search).get("tab") === "analytics"
-      ? "analytics"
-      : new URLSearchParams(window.location.search).get("tab") === "guestbook"
-        ? "guestbook"
-        : "profile"
+    new URLSearchParams(window.location.search).get("tab") === "contact"
+      ? "contact"
+      : new URLSearchParams(window.location.search).get("tab") === "analytics"
+        ? "analytics"
+        : new URLSearchParams(window.location.search).get("tab") === "guestbook"
+          ? "guestbook"
+          : "profile"
   );
   const [notice, setNotice] = useState<{
     type: "success" | "error";
@@ -251,6 +255,7 @@ export default function Admin() {
           ))}
         </div>
         {tab === "analytics" && <AnalyticsManager />}
+        {tab === "contact" && <ContactMessagesManager />}
         {content.isLoading && (
           <div className="admin-content-loading">
             <span className="status-dot" />
