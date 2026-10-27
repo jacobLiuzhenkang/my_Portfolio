@@ -196,7 +196,7 @@ export default function Composer({
       await onDone();
       notify(
         result.state === "held"
-          ? "留言已收到，需站长确认后展示。"
+          ? "已提交，通过站长审核后才会公开。"
           : "留言已发布，谢谢你来过。"
       );
     } catch (error) {

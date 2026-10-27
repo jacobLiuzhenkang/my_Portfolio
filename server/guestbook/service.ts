@@ -302,7 +302,7 @@ export async function createPost(
         message: "图片未上传完成、已失效或总大小超出限制，请重新选择。",
       });
     const flags = moderateText(input.nickname + "\n" + input.body);
-    const state = flags.length ? "held" : "published";
+    const state = ctx.admin ? "published" : "held";
     await db.query(
       "INSERT INTO gb_posts(id,visitor_id,admin_id,nickname,body,state,flags) VALUES($1,$2,$3,$4,$5,$6,$7)",
       [
@@ -403,7 +403,7 @@ export async function addComment(
       return { id: existing.id, state: existing.state };
     }
     const flags = moderateText(input.nickname + "\n" + input.body);
-    const state = flags.length ? "held" : "published";
+    const state = ctx.admin ? "published" : "held";
     await db.query(
       "INSERT INTO gb_comments(id,post_id,visitor_id,admin_id,nickname,body,state,flags) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
       [
