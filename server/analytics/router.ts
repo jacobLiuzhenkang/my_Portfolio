@@ -28,6 +28,92 @@ export const analyticsRouter = createRouter({
       );
     return { ok: true };
   }),
+  project: adminQuery
+    .input(
+      z.object({
+        slug: z.string().regex(/^[a-z0-9-]{1,80}$/),
+        from: z.iso.date().optional(),
+        to: z.iso.date().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      let range;
+      try {
+        range = dateRange(input.from, input.to);
+      } catch {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "日期区间须在 366 天内",
+        });
+      }
+      const db = getDb();
+      const where = sql`occurred_at >= ${range.start} AND occurred_at < ${range.end} AND project_slug = ${input.slug}`;
+      type Counts = {
+        caseOpen: number;
+        pdfView: number;
+        outboundClick: number;
+      };
+      const [cards, funnel, series, sources, devices, titles] =
+        await Promise.all([
+          db.execute<Counts & { uv: number }>(sql`
+          SELECT count(distinct visitor_id)::int AS uv,
+            count(*) FILTER (WHERE name='case_open')::int AS "caseOpen",
+            count(*) FILTER (WHERE name='pdf_view')::int AS "pdfView",
+            count(*) FILTER (WHERE name='outbound_click')::int AS "outboundClick"
+          FROM analytics_events WHERE ${where}`),
+          db.execute<Counts>(sql`
+          WITH visitors AS (
+            SELECT visitor_id, bool_or(name='case_open') AS opened,
+              bool_or(name='pdf_view') AS pdf, bool_or(name='outbound_click') AS outbound
+            FROM analytics_events WHERE ${where} GROUP BY visitor_id
+          )
+          SELECT count(*) FILTER (WHERE opened)::int AS "caseOpen",
+            count(*) FILTER (WHERE opened AND pdf)::int AS "pdfView",
+            count(*) FILTER (WHERE opened AND pdf AND outbound)::int AS "outboundClick"
+          FROM visitors`),
+          db.execute<Counts & { date: string }>(sql`
+          SELECT to_char(occurred_at AT TIME ZONE 'Asia/Shanghai', 'YYYY-MM-DD') AS date,
+            count(*) FILTER (WHERE name='case_open')::int AS "caseOpen",
+            count(*) FILTER (WHERE name='pdf_view')::int AS "pdfView",
+            count(*) FILTER (WHERE name='outbound_click')::int AS "outboundClick"
+          FROM analytics_events WHERE ${where} GROUP BY 1 ORDER BY 1`),
+          db.execute<{ label: string; count: number }>(sql`
+          SELECT coalesce(nullif(utm_source,''), referrer_host, '直接访问') AS label, count(*)::int AS count
+          FROM analytics_events WHERE ${where} GROUP BY 1 ORDER BY count DESC, label LIMIT 10`),
+          db.execute<{ label: string; count: number }>(sql`
+          SELECT device AS label, count(*)::int AS count
+          FROM analytics_events WHERE ${where} GROUP BY 1 ORDER BY count DESC, label`),
+          db
+            .select({ id: projects.id, title: projects.title })
+            .from(projects)
+            .where(eq(projects.published, true)),
+        ]);
+      const counts = funnel.rows[0];
+      const daily = new Map(series.rows.map(row => [row.date, row]));
+      const filled = [];
+      for (let time = +range.start; time < +range.end; time += 86400000) {
+        const date = new Date(time + 8 * 3600000).toISOString().slice(0, 10);
+        filled.push(
+          daily.get(date) || { date, caseOpen: 0, pdfView: 0, outboundClick: 0 }
+        );
+      }
+      return {
+        title:
+          titles.find(p => projectSlug(p, titles) === input.slug)?.title ||
+          input.slug,
+        cards: cards.rows[0],
+        funnel: {
+          ...counts,
+          pdfRate: counts.caseOpen ? counts.pdfView / counts.caseOpen : null,
+          outboundRate: counts.pdfView
+            ? counts.outboundClick / counts.pdfView
+            : null,
+        },
+        series: filled,
+        sources: sources.rows,
+        devices: devices.rows,
+      };
+    }),
   overview: adminQuery
     .input(
       z

@@ -1,4 +1,4 @@
-# 站内埋点 A 期
+# 站内埋点 A / B 期
 
 管理员登录后选择「数据」，或访问 `/admin?tab=analytics`。可切换近 7 / 30 天；接口支持 `{ from: 'YYYY-MM-DD', to: 'YYYY-MM-DD' }`，首尾日期均包含，最大 366 天，时区为北京时间。
 
@@ -38,4 +38,14 @@ npm run dev -- --host 0.0.0.0
 
 打开首页、成长页、案例，展开完整 PDF，然后登录 `/admin?tab=analytics`。检查四张卡片、日趋势、作品榜、来源环图、地区条形图；切换近 30 天。无事件应展示「公开站有访问后将显示」。注销后 overview 应返回 UNAUTHORIZED；带跨站 Origin 的 track 应拒绝；采集接口失败时公开浏览应继续可用。可用 DevTools Network 检查 beacon 的 SuperJSON `{ json: [event] }` POST；没有公开可见追踪条。
 
-本期不包含单案例分析、CSV、UTM 配置、排除名单 UI、实时推送。没有日汇总或自动保留期删除，查询在数据库内聚合、限制日期和榜单；未来数据增大后需另行评估保留期和日汇总。不会在本期修改留言板、CSP、公开布局或 WebGL。
+本期不包含 C 期的 CSV 导出、UTM 活动配置、排除名单 UI，也不包含实时推送。没有日汇总或自动保留期删除，查询在数据库内聚合、限制日期和榜单；未来数据增大后需另行评估保留期和日汇总。不会在本期修改留言板、CSP、公开布局或 WebGL。
+
+## B 期：单案例 / PDF 漏斗
+
+在「数据」总览作品榜选择作品按钮，同一 tab 内进入详情；可返回总览并保留近 7 / 30 天选择。支持 `/admin?tab=analytics&project=<slug>` 深链与刷新。`analytics.project` 沿用 adminQuery，未登录拒绝，日期与总览一致。未知 slug 返回 slug 标题和零值，不报 500。
+
+卡片 UV 是该 slug 所有相关事件的 visitor_id 去重数，其余卡片和日趋势为事件次数。漏斗在同一日期区间、同一 slug 内按访客逐步取交集：有 case_open → 同时有 pdf_view → 同时有 outbound_click。重复事件只计一人；不要求时间顺序，不是严格顺序路径归因。相邻转化率分母为零时显示「—」。未提供演示或无演示事件时第三步为零。没有打开记录显示中文空态，趋势仍补齐全部日期。
+
+来源 Top 10 与设备仅统计该 slug 区间内相关事件的次数（不是 PV 或漏斗访客数），来源依次使用 utm_source、referrer_host、直接访问。本期未修改公开采集、事件口径、表结构或案例正文。
+
+本地测试包含 project 的 UNAUTHORIZED / BAD_REQUEST，以及一次性 PostgreSQL fixture 的重复访客、漏斗交集、跨 slug / 日期隔离、北京时间补零、未知 slug 和零分母。集成测试须按上文显式设置 ANALYTICS_TEST_DB=1，只允许本地 analytics_test。

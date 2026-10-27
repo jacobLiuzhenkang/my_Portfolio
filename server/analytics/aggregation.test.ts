@@ -82,3 +82,113 @@ it.skipIf(!enabled)(
     expect(result.regions).toContainEqual({ label: "CN · SH", count: 1 });
   }
 );
+
+it.skipIf(!enabled)(
+  "deduplicates nested project funnels and isolates slugs, dates and Beijing days",
+  async () => {
+    await getPool().query("TRUNCATE analytics_events");
+    const base = {
+      path: "/",
+      device: "mobile",
+      occurredAt: new Date("2026-01-01T16:00:00Z"),
+      projectSlug: "example",
+    };
+    await getDb()
+      .insert(analyticsEvents)
+      .values([
+        ...[
+          "case_open",
+          "case_open",
+          "pdf_view",
+          "pdf_view",
+          "outbound_click",
+        ].map(name => ({ ...base, name, visitorId: "a" })),
+        ...["case_open", "pdf_view"].map(name => ({
+          ...base,
+          name,
+          visitorId: "b",
+        })),
+        ...["case_open", "outbound_click"].map(name => ({
+          ...base,
+          name,
+          visitorId: "c",
+        })),
+        ...["pdf_view", "outbound_click"].map(name => ({
+          ...base,
+          name,
+          visitorId: "d",
+        })),
+        {
+          ...base,
+          name: "case_open",
+          visitorId: "other",
+          projectSlug: "other",
+        },
+        {
+          ...base,
+          name: "case_open",
+          visitorId: "old",
+          occurredAt: new Date("2025-01-01T00:00:00Z"),
+        },
+        {
+          ...base,
+          name: "case_open",
+          visitorId: "end",
+          occurredAt: new Date("2026-01-03T16:00:00Z"),
+        },
+      ]);
+    const caller = analyticsRouter.createCaller({
+      req: new Request("http://localhost"),
+      resHeaders: new Headers(),
+      admin: { id: 1 } as Admin,
+    });
+    await getPool().query(
+      "INSERT INTO projects (title, published) VALUES ('Example', true)"
+    );
+    const result = await caller.project({
+      slug: "example",
+      from: "2026-01-01",
+      to: "2026-01-03",
+    });
+    expect(result.title).toBe("Example");
+    expect(result.cards).toEqual({
+      uv: 4,
+      caseOpen: 4,
+      pdfView: 4,
+      outboundClick: 3,
+    });
+    expect(result.funnel).toEqual({
+      caseOpen: 3,
+      pdfView: 2,
+      outboundClick: 1,
+      pdfRate: 2 / 3,
+      outboundRate: 0.5,
+    });
+    expect(result.series).toEqual([
+      { date: "2026-01-01", caseOpen: 0, pdfView: 0, outboundClick: 0 },
+      { date: "2026-01-02", caseOpen: 4, pdfView: 4, outboundClick: 3 },
+      { date: "2026-01-03", caseOpen: 0, pdfView: 0, outboundClick: 0 },
+    ]);
+    expect(result.devices).toEqual([{ label: "mobile", count: 11 }]);
+    expect(result.sources).toEqual([{ label: "直接访问", count: 11 }]);
+    const unknown = await caller.project({
+      slug: "unknown",
+      from: "2026-01-01",
+      to: "2026-01-03",
+    });
+    expect(unknown.title).toBe("unknown");
+    expect(unknown.cards).toEqual({
+      uv: 0,
+      caseOpen: 0,
+      pdfView: 0,
+      outboundClick: 0,
+    });
+    expect(unknown.funnel).toEqual({
+      caseOpen: 0,
+      pdfView: 0,
+      outboundClick: 0,
+      pdfRate: null,
+      outboundRate: null,
+    });
+  }
+);
