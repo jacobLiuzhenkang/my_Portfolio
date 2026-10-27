@@ -14,7 +14,10 @@ for (const [index, kind] of (["viform", "sac"] as const).entries()) {
     it("upgrades the delivered detailed version and preserves an edited version", () => {
       const detailed = recentDetailedProjectBaselines[kind];
       expect(planRecentProjectUpdate(detailed, next, kind)).toEqual({
-        patch: { content: next.content },
+        patch: {
+          ...(detailed.description !== next.description ? { description: next.description } : {}),
+          content: next.content,
+        },
         customFieldsKept: [],
       });
       expect(
@@ -23,7 +26,10 @@ for (const [index, kind] of (["viform", "sac"] as const).entries()) {
           next,
           kind
         )
-      ).toEqual({ patch: {}, customFieldsKept: ["content"] });
+      ).toEqual({
+        patch: detailed.description !== next.description ? { description: next.description } : {},
+        customFieldsKept: ["content"],
+      });
     });
     it("upgrades the original import and both known layout versions", () => {
       for (const content of [

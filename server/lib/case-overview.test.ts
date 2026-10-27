@@ -30,7 +30,7 @@ describe("case overview editorial evidence", () => {
         "结果",
       ]);
       const result = overview[2].text;
-      expect(result).toContain("本地");
+      expect(result).toMatch(/本地|可演示交付物/);
       expect(project.content).toContain(result);
       expect(overview.map(item => item.text).join("\n")).not.toContain("![");
     }

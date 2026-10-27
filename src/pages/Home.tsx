@@ -195,10 +195,13 @@ export default function Home() {
                 <Link className="pf-button pf-button-primary" to="/#work">
                   查看近期作品 <ArrowDown size={17} />
                 </Link>
-                <Link className="pf-button pf-button-ghost" to="/growth">
-                  了解我的经历 <ArrowUpRight size={17} />
+                <Link className="pf-button pf-button-ghost" to="/#contact">
+                  联系我 <ArrowUpRight size={17} />
                 </Link>
               </div>
+              <Link className="pf-hero-resume-link" to="/growth">
+                经历与简历
+              </Link>
               <p className="pf-hero-location">
                 {profile.company}
                 <span>·</span>

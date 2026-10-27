@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import Home from "./pages/Home";
 import Growth from "./pages/Growth";
 import PublicLayout from "./components/PublicLayout";
@@ -33,6 +33,7 @@ export default function App() {
           <Route index element={<CaseRoute />} />
           <Route path="work/:slug" element={<CaseRoute />} />
         </Route>
+        <Route path="/contact" element={<Navigate to="/#contact" replace />} />
         <Route path="/growth" element={<Growth />} />
         <Route
           path="/guestbook"
