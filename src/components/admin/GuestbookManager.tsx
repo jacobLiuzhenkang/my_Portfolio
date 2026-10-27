@@ -107,7 +107,7 @@ export default function GuestbookManager({
       <div className="gb-admin-controls">
         <div>
           <strong>{data?.writesEnabled ? "正常接收留言" : "互动已暂停"}</strong>
-          <p>正常内容立即展示；被规则标记的内容等你确认。</p>
+          <p>访客留言默认待审核，你点公开展示后才对他人可见。</p>
         </div>
         <button
           disabled={busy || !data}

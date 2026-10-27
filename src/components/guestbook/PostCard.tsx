@@ -138,7 +138,7 @@ function Comments({ post, actions }: { post: BoardPost; actions: Actions }) {
       setBody("");
       await refresh();
       if (result.state === "held")
-        actions.notify("评论已收到，需站长确认后展示。");
+        actions.notify("已提交，通过站长审核后才会公开。");
     } catch (e) {
       actions.notify(e instanceof Error ? e.message : "评论失败，内容已保留。");
     } finally {
