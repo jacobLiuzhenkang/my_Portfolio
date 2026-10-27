@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router";
+import AnalyticsProject from "./AnalyticsProject";
 import {
   Area,
   AreaChart,
@@ -26,15 +28,37 @@ const colors = [
 ];
 export default function AnalyticsManager() {
   const [days, setDays] = useState(7);
-  const data = trpc.analytics.overview.useQuery({
-    from: new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Shanghai",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(Date.now() - (days - 1) * 86400000)),
-  });
+  const [params, setParams] = useSearchParams();
+  const project = params.get("project");
+  const openProject = (slug: string | null) =>
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      next.set("tab", "analytics");
+      if (slug) next.set("project", slug);
+      else next.delete("project");
+      return next;
+    });
+  const data = trpc.analytics.overview.useQuery(
+    {
+      from: new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(Date.now() - (days - 1) * 86400000)),
+    },
+    { enabled: !project }
+  );
   const result = data.data;
+  if (project)
+    return (
+      <AnalyticsProject
+        slug={project}
+        days={days}
+        setDays={setDays}
+        onBack={() => openProject(null)}
+      />
+    );
   return (
     <section className="admin-section analytics-manager">
       <div className="admin-section-heading">
@@ -134,7 +158,20 @@ export default function AnalyticsManager() {
               </article>
               <article className="analytics-chart analytics-wide">
                 <h3>作品表现 Top 10</h3>
-                <p>案例打开与 PDF 阅读次数</p>
+                <p>案例打开与 PDF 阅读次数 · 选择作品查看漏斗</p>
+                <div className="analytics-project-links">
+                  {result.topProjects.map(project => (
+                    <button
+                      type="button"
+                      className="admin-secondary"
+                      key={project.slug}
+                      onClick={() => openProject(project.slug)}
+                    >
+                      {project.title} · 打开 {project.opens} / PDF{" "}
+                      {project.pdfs} →
+                    </button>
+                  ))}
+                </div>
                 {!result.topProjects.length ? (
                   <p>本时段尚无案例打开</p>
                 ) : (

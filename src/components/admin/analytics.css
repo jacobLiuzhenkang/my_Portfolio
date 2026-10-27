@@ -98,3 +98,24 @@
 .analytics-chart .recharts-legend-item-text {
   overflow-wrap: anywhere;
 }
+
+.analytics-project-links {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.analytics-project-links button {
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.analytics-funnel {
+  display: grid;
+  gap: 14px;
+  padding-left: 24px;
+}
+.analytics-funnel strong {
+  color: var(--mint);
+  font-variant-numeric: tabular-nums;
+}
