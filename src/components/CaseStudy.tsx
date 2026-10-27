@@ -40,29 +40,29 @@ export default function CaseStudy({
       : "补充图片";
   return (
     <div className="project-story case-study">
-      {overview.length > 0 && (
-        <section className="case-overview" aria-label="案例概览">
-          {overview.map(item => {
-            const lead =
-              item.text.match(/^[\s\S]*?[。！？](?:[”」])?/)?.[0] || item.text;
-            return (
-              <section className="case-overview-step" key={item.label}>
-                <h3>
-                  {item.label}
-                  <small>{item.source}</small>
-                </h3>
-                <p>{lead}</p>
-                {lead !== item.text && (
-                  <details className="case-overview-detail">
-                    <summary>展开{item.source}原文</summary>
-                    <p>{item.text}</p>
-                  </details>
-                )}
-              </section>
-            );
-          })}
-        </section>
-      )}
+      <section className="case-overview" aria-label="案例概览">
+        {overview.map(item => {
+          const lead =
+            item.text.match(/^[\s\S]*?[。！？](?:[”」])?/)?.[0] || item.text;
+          return (
+            <section className="case-overview-step" key={item.label}>
+              <h3>
+                {item.label}
+                <small>{item.source}</small>
+              </h3>
+              <p className={item.text ? undefined : "text-muted-foreground"}>
+                {lead || "详见下文"}
+              </p>
+              {lead !== item.text && (
+                <details className="case-overview-detail">
+                  <summary>展开{item.source}原文</summary>
+                  <p>{item.text}</p>
+                </details>
+              )}
+            </section>
+          );
+        })}
+      </section>
       <Markdown
         skipHtml
         allowedElements={[

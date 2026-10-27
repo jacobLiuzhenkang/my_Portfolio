@@ -2,7 +2,7 @@ import { caseMarkdown, legacyPlain } from "@contracts/project-content";
 
 // Read only explicitly named editorial sections. A project description alone
 // does not establish an outcome, so never use it as a result fallback.
-export function caseOverview(content: string, description = "") {
+export function caseOverview(content: string, _description = "") {
   const sections = new Map<string, string>();
   let heading = "";
   for (const line of caseMarkdown(content).split("\n")) {
@@ -25,7 +25,7 @@ export function caseOverview(content: string, description = "") {
     {
       label: "问题",
       source: "背景与痛点",
-      text: read(["问题", "项目背景"]) || description.trim(),
+      text: read(["问题", "项目背景"]),
     },
     {
       label: "做法",
@@ -43,5 +43,5 @@ export function caseOverview(content: string, description = "") {
       source: "成果与当前阶段",
       text: read(["结果", "当前阶段", "项目复盘", "项目总结", "设计总结"]),
     },
-  ].filter(item => item.text);
+  ];
 }
