@@ -342,7 +342,7 @@ body.dialog-open .pf-scroll-telemetry {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   align-items: center;
   gap: 44px;
-  padding-block: 84px 72px;
+  padding-block: clamp(36px, 7svh, 72px);
 }
 .pf-hero-copy {
   max-width: 750px;
@@ -361,6 +361,11 @@ body.dialog-open .pf-scroll-telemetry {
 .pf-identity-divider {
   color: var(--pf-dim);
 }
+.pf-identity strong {
+  color: var(--pf-white);
+  font-size: 24px;
+  font-weight: 650;
+}
 .pf-hero h1 {
   max-width: 12em;
   margin: 0 0 26px;
@@ -371,10 +376,10 @@ body.dialog-open .pf-scroll-telemetry {
   text-wrap: balance;
 }
 .pf-hero-introduction {
-  max-width: 33em;
+  max-width: 36em;
   color: #b9c7ce;
   font-size: 17px;
-  line-height: 1.95;
+  line-height: 1.75;
 }
 .pf-hero-location {
   display: flex;
@@ -390,7 +395,18 @@ body.dialog-open .pf-scroll-telemetry {
 .pf-hero-atmosphere {
   align-self: end;
   padding: 0 0 20px 12%;
-  color: #b9d7e5;
+  color: #8aa4af;
+  opacity: 0.65;
+}
+.pf-hero .pf-button-primary {
+  min-height: 52px;
+  padding-inline: 25px;
+  font-weight: 650;
+}
+.pf-hero .pf-button-ghost {
+  border-color: transparent;
+  color: #b9c7ce;
+  background: transparent;
 }
 .pf-hero-atmosphere > span {
   display: block;
@@ -1995,3 +2011,53 @@ body.dialog-open .pf-scroll-telemetry {
     margin-block: 22px 30px;
   }
 }
+
+/* Editorial overview precedes the unchanged detailed case and its media. */
+.case-overview {
+  display: grid;
+  gap: 24px;
+  max-width: 780px;
+  margin: 0 auto 48px;
+  padding: 28px;
+  border: 1px solid #8bbcca30;
+  border-radius: 6px;
+  background: #10212a80;
+}
+.pf-dialog .case-overview-step h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 10px;
+  color: var(--pf-white);
+  font-size: 20px;
+  line-height: 1.5;
+}
+.case-overview-step h3 small {
+  color: #91aab5;
+  font-size: 12px;
+  font-weight: 400;
+}
+.case-overview-step + .case-overview-step {
+  padding-top: 24px;
+  border-top: 1px solid #8bbcca24;
+}
+.case-overview-step p {
+  color: #c2d0d6;
+  font-size: 16px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .case-overview { gap: 20px; padding: 20px 18px; margin-bottom: 32px; }
+  .case-overview-step + .case-overview-step { padding-top: 20px; }
+  .pf-dialog .dialog-heading h2 { text-wrap: balance; }
+}
+.case-overview-detail summary {
+  width: fit-content;
+  margin-top: 10px;
+  padding-block: 4px;
+  color: var(--pf-cyan);
+  cursor: pointer;
+  font-size: 13px;
+}
+.case-overview-detail[open] summary { margin-bottom: 12px; }

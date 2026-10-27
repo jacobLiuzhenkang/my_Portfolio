@@ -3,6 +3,7 @@ import Markdown, { defaultUrlTransform } from "react-markdown";
 import { caseMarkdown, inlineImageSources } from "@contracts/project-content";
 import { isPdfReference, pdfLabel } from "@contracts/pdf-asset";
 import CasePdf from "./CasePdf";
+import { caseOverview } from "@/lib/case-overview";
 
 function nodeText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -18,12 +19,15 @@ export default function CaseStudy({
   content,
   gallery,
   title,
+  description = "",
 }: {
   content: string;
   gallery: string[];
   title: string;
+  description?: string;
 }) {
   const body = caseMarkdown(content);
+  const overview = caseOverview(content, description);
   const referenced = inlineImageSources(body);
   for (const match of body.matchAll(/\[[^\]]*\]\(\s*([^)\s]+)\s*\)/g)) {
     if (isPdfReference(match[1])) referenced.add(match[1]);
@@ -36,6 +40,29 @@ export default function CaseStudy({
       : "补充图片";
   return (
     <div className="project-story case-study">
+      {overview.length > 0 && (
+        <section className="case-overview" aria-label="案例概览">
+          {overview.map(item => {
+            const lead =
+              item.text.match(/^[\s\S]*?[。！？](?:[”」])?/)?.[0] || item.text;
+            return (
+              <section className="case-overview-step" key={item.label}>
+                <h3>
+                  {item.label}
+                  <small>{item.source}</small>
+                </h3>
+                <p>{lead}</p>
+                {lead !== item.text && (
+                  <details className="case-overview-detail">
+                    <summary>展开{item.source}原文</summary>
+                    <p>{item.text}</p>
+                  </details>
+                )}
+              </section>
+            );
+          })}
+        </section>
+      )}
       <Markdown
         skipHtml
         allowedElements={[
