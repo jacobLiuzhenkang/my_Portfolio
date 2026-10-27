@@ -39,7 +39,7 @@ function ProjectCard({
   featured?: boolean;
   onOpen: () => void;
 }) {
-  const status = project.tags.find(tag => /验证|审阅|迭代|上线/.test(tag));
+  const status = project.tags.find(tag => /验证|审阅|迭代|上线|工作流|交付/.test(tag));
   const coverUrl = displayCoverUrl(project.coverUrl);
   const cover = projectCoverSources(coverUrl);
   return (

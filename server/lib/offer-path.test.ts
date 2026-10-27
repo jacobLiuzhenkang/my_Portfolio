@@ -26,6 +26,17 @@ describe("recruiter entry points", () => {
     expect(source).not.toContain("发布后所有访客可见");
   });
 
+  it("shows the delivery claims as desktop featured-card status badges", async () => {
+    const source = await readFile("src/pages/Home.tsx", "utf8");
+    const statusPattern = source.match(/const status = project\.tags\.find\(tag => \/([^/]+)\/\.test\(tag\)\);/);
+    expect(statusPattern).not.toBeNull();
+    const statusRegex = new RegExp(statusPattern![1]);
+    const [viform, sac] = recentProjects;
+    expect(viform.tags.find(tag => statusRegex.test(tag))).toBe("可恢复工作流");
+    expect(sac.tags.find(tag => statusRegex.test(tag))).toBe("可演示交付");
+    expect(source).toMatch(/<span className="pf-status">\s*<i \/>\s*\{status\}/);
+  });
+
   it("states demonstrable deliverables and their acceptance boundaries", () => {
     const [viform, sac] = recentProjects;
     expect(viform.tags).toEqual(["AI 创作", "工作台设计", "任务恢复", "可恢复工作流"]);
