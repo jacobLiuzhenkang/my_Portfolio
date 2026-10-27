@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { asc, eq } from "drizzle-orm";
 import { getDb } from "../server/queries/connection";
 import { experiences, projects, resumeProfiles } from "./schema";
@@ -5,6 +6,12 @@ import {
   isKnownRecentCase,
   planRecentProjectUpdate,
 } from "./recent-project-upgrade";
+import {
+  isXiashangCase,
+  normalizeXiashangContent,
+  planXiashangUpdate,
+  xiashangCase,
+} from "./xiashang-case";
 import {
   currentExperience,
   historicalWorkflow,
@@ -66,6 +73,9 @@ export function removeRetiredTraining(text: string) {
 
 /** Guarded, transactional and safe to re-run without overwriting custom copy. */
 export async function upgradePortfolioContent() {
+  const xiashangContent = normalizeXiashangContent(
+    await readFile("public/posts/project1.md", "utf8")
+  );
   const db = getDb();
   const result = {
     profileFields: 0,
@@ -164,6 +174,25 @@ export async function upgradePortfolioContent() {
       }
       await tx.insert(projects).values(project);
       result.projectsAdded += 1;
+    }
+    for (const existing of existingProjects.filter(isXiashangCase)) {
+      const { patch, customFieldsKept } = planXiashangUpdate(existing, {
+        description: xiashangCase.description,
+        content: xiashangContent,
+        tags: [...xiashangCase.tags],
+      });
+      if (customFieldsKept.length)
+        result.customProjectFieldsKept.push({
+          id: existing.id,
+          fields: customFieldsKept,
+        });
+      if (Object.keys(patch).length) {
+        await tx
+          .update(projects)
+          .set({ ...patch, updatedAt: new Date() })
+          .where(eq(projects.id, existing.id));
+        result.projectsUpdated += 1;
+      }
     }
   });
   return result;

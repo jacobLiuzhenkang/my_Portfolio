@@ -8,6 +8,7 @@ import {
   profileCopy,
   workflowSkill,
 } from "./portfolio-content";
+import { xiashangCase } from "./xiashang-case";
 import { upgradePortfolioContent } from "./upgrade-portfolio";
 
 
@@ -152,9 +153,8 @@ async function seed() {
       title: "夏商到家视觉升级",
       subtitle: "移动端 · C 端产品设计 · 小程序",
       category: "产品设计",
-      description:
-        "在第三方 SaaS 限制下重塑视觉规范与 O2O 体验，建立线上线下统一的品牌心智。",
-      tags: ["Mobile Design", "SaaS", "Visual Upgrade"],
+      description: xiashangCase.description,
+      tags: [...xiashangCase.tags],
       coverImage: "/images/seashine/cover.webp",
       gallery: [1, 2, 3, 4, 5].map(n => `/images/seashine/${n}.webp`),
       demoUrl:
