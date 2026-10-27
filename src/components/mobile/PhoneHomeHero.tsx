@@ -48,9 +48,12 @@ export default function PhoneHomeHero({
             查看近期作品
             <ArrowDown size={17} />
           </Link>
-          <Link className="phone-poster-secondary" to="/growth">
-            了解我的经历
+          <Link className="phone-poster-secondary" to="/#contact">
+            联系我
             <ArrowUpRight size={17} />
+          </Link>
+          <Link className="pf-hero-resume-link" to="/growth">
+            经历与简历
           </Link>
         </div>
         {project && (

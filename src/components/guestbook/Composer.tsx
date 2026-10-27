@@ -300,7 +300,7 @@ export default function Composer({
       </div>
       <p className="gb-compose-note">
         {enabled
-          ? "发布后所有访客可见。请友善交流，保护自己和他人的隐私。"
+          ? "提交后需站长审核才会公开。请友善交流，保护自己和他人的隐私。"
           : "留言互动暂时休息中，已有内容仍可浏览。"}
       </p>
     </form>

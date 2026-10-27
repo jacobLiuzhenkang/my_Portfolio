@@ -23,6 +23,7 @@
   .phone-poster-bottom { display:grid; gap:24px; }
   .phone-poster-actions,.phone-growth-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; }
   .phone-poster-actions .pf-button,.phone-growth-actions .pf-button { min-height:48px; padding:11px 17px; font-size:13px; }
+  .phone-poster-actions .pf-hero-resume-link { flex-basis:100%; }
   .phone-poster-secondary { display:inline-flex; min-height:48px; align-items:center; gap:9px; color:#b5ced8; font-size:13px; }
   .phone-work-peek { display:flex; min-height:76px; align-items:center; gap:16px; padding:11px 0 0; border-top:1px solid #88b6cc36; color:var(--pf-white); }
   .phone-work-peek img { width:88px; height:50px; flex:0 0 88px; object-fit:cover; border:1px solid #c4d6d72e; border-radius:3px; }

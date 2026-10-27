@@ -429,6 +429,18 @@ body.dialog-open .pf-scroll-telemetry {
   color: #9bb5c1;
   font-size: 12px;
 }
+.pf-hero-resume-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--pf-muted);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pf-hero-resume-link:hover {
+  color: var(--pf-white);
+}
 .pf-actions {
   display: flex;
   flex-wrap: wrap;
