@@ -1727,6 +1727,27 @@ body.dialog-open .pf-scroll-telemetry {
   text-align: left;
   cursor: pointer;
 }
+.pf-drawer-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--pf-dim);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.pf-drawer-quiet svg {
+  width: 14px;
+  height: 14px;
+  color: inherit;
+}
+.pf-drawer-quiet.active,
+.pf-drawer-quiet:hover,
+.pf-drawer-quiet:active {
+  color: var(--pf-muted);
+}
 .pf-mobile-drawer :is(a, button):focus-visible {
   outline: 2px solid var(--pf-acid);
   outline-offset: 5px;

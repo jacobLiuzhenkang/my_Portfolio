@@ -143,12 +143,6 @@ export function PortfolioHeader({
           <Link className={active === "growth" ? "active" : ""} to="/growth">
             <span>02</span> 我的成长 <small>MY WORK LIFE</small>
           </Link>
-          <Link
-            className={active === "guestbook" ? "active" : ""}
-            to="/guestbook"
-          >
-            留言板
-          </Link>
           <a href={active === "work" ? "#contact" : "/#contact"}>
             <span>03</span> 联系我 <small>CONTACT</small>
           </a>
@@ -226,17 +220,6 @@ export function PortfolioHeader({
               </span>
               <ArrowUpRight size={27} aria-hidden="true" />
             </Link>
-            <Link
-              to="/guestbook"
-              className={active === "guestbook" ? "active" : undefined}
-              onClick={() => setMenu(false)}
-            >
-              <span>
-                <strong>留言板</strong>
-                <small>LEAVE A NOTE</small>
-              </span>
-              <MessageSquare size={26} aria-hidden="true" />
-            </Link>
             <Link to="/#contact" onClick={() => setMenu(false)}>
               <span>
                 <strong>联系我</strong>
@@ -260,6 +243,18 @@ export function PortfolioHeader({
                   ? "暂停背景动效"
                   : "开启背景动效"}
             </button>
+            <Link
+              to="/guestbook"
+              className={
+                active === "guestbook"
+                  ? "pf-drawer-quiet active"
+                  : "pf-drawer-quiet"
+              }
+              onClick={() => setMenu(false)}
+            >
+              <MessageSquare size={14} aria-hidden="true" />
+              公开留言
+            </Link>
           </div>
         </NavigationDialog.Content>
       </NavigationDialog.Portal>
