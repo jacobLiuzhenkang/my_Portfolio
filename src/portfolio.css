@@ -1851,7 +1851,7 @@ body.dialog-open .pf-scroll-telemetry {
   max-width: none;
   margin-bottom: 0;
 }
-.case-study > :is(p, ul, ol, blockquote, h2, h3, h4) {
+.case-study > :is(p, ul, ol, blockquote, h2, h3, h4, .case-overview) {
   max-width: 800px;
 }
 .case-study > :is(h2, h3) {
@@ -2049,12 +2049,7 @@ body.dialog-open .pf-scroll-telemetry {
 .case-overview {
   display: grid;
   gap: 24px;
-  max-width: 780px;
-  margin: 0 auto 48px;
-  padding: 28px;
-  border: 1px solid #8bbcca30;
-  border-radius: 6px;
-  background: #10212a80;
+  margin: 0 0 48px;
 }
 .pf-dialog .case-overview-step h3 {
   display: flex;
@@ -2081,7 +2076,7 @@ body.dialog-open .pf-scroll-telemetry {
   overflow-wrap: anywhere;
 }
 @media (max-width: 760px) {
-  .case-overview { gap: 20px; padding: 20px 18px; margin-bottom: 32px; }
+  .case-overview { gap: 20px; margin-bottom: 32px; }
   .case-overview-step + .case-overview-step { padding-top: 20px; }
   .pf-dialog .dialog-heading h2 { text-wrap: balance; }
 }
