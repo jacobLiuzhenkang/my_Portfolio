@@ -2094,3 +2094,22 @@ body.dialog-open .pf-scroll-telemetry {
   font-size: 13px;
 }
 .case-overview-detail[open] summary { margin-bottom: 12px; }
+
+/* Recruitment scan: scoped to Growth; shared by phone and larger layouts. */
+.pf-growth-evidence { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 24px; padding:0; list-style:none; }
+.pf-growth-evidence li { padding:7px 11px; border:1px solid var(--pf-line); border-radius:4px; background:#0b1c23; color:var(--pf-cyan); font-size:13px; }
+.pf-growth-path { margin-top:24px; color:var(--pf-muted); font-size:15px; }
+.pf-growth-story { max-width:47em; margin-top:12px; color:var(--pf-muted); line-height:1.9; }
+.pf-growth-story summary { width:fit-content; cursor:pointer; color:var(--pf-cyan); padding-block:8px; }
+.pf-growth-story p { margin-top:12px; }
+.pf-growth-education { margin-top:28px; color:var(--pf-muted); line-height:1.8; }
+.pf-growth .pf-skill-matrix { grid-template-columns:repeat(3,minmax(0,1fr)); }
+@media (max-width: 900px) { .pf-growth .pf-skill-matrix { grid-template-columns:1fr; } }
+@media (max-width: 760px) {
+  .phone-growth-hero .pf-growth-identity { gap:6px 12px; font-size:20px; }
+  .phone-growth-hero h1 { margin-block:18px; font-size:28px; line-height:1.45; }
+  .phone-growth-hero .pf-growth-evidence { gap:6px; margin-bottom:18px; }
+  .phone-growth-hero .pf-growth-evidence li { font-size:12px; padding:6px 8px; }
+  .phone-growth-hero .pf-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:0; }
+  .phone-growth-hero .pf-growth-path { font-size:13px; }
+}

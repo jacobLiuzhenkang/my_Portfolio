@@ -12,6 +12,7 @@ type LiveProject = {
   title: string;
   description: string;
   content: string;
+  tags: string[];
   coverImage: string | null;
 };
 
@@ -65,7 +66,7 @@ async function publishRecentProjects() {
     const initial = plans(
       (
         await db.query<LiveProject>(
-          'SELECT id, title, description, content, "coverImage" FROM projects WHERE id IN (6, 7) ORDER BY id'
+          'SELECT id, title, description, content, tags, "coverImage" FROM projects WHERE id IN (6, 7) ORDER BY id'
         )
       ).rows
     );
@@ -127,7 +128,7 @@ async function publishRecentProjects() {
     const current = plans(
       (
         await db.query<LiveProject>(
-          'SELECT id, title, description, content, "coverImage" FROM projects WHERE id IN (6, 7) ORDER BY id FOR UPDATE'
+          'SELECT id, title, description, content, tags, "coverImage" FROM projects WHERE id IN (6, 7) ORDER BY id FOR UPDATE'
         )
       ).rows
     );
@@ -135,10 +136,11 @@ async function publishRecentProjects() {
     for (const plan of current) {
       if (!Object.keys(plan.patch).length) continue;
       const result = await db.query(
-        'UPDATE projects SET description=$1, content=$2, "updatedAt"=NOW() WHERE id=$3',
+        'UPDATE projects SET description=$1, content=$2, tags=$3, "updatedAt"=NOW() WHERE id=$4',
         [
           plan.patch.description ?? plan.row.description,
           plan.patch.content ?? plan.row.content,
+          JSON.stringify(plan.patch.tags ?? plan.row.tags),
           plan.row.id,
         ]
       );
