@@ -32,16 +32,16 @@ describe("recruiter entry points", () => {
     expect(statusPattern).not.toBeNull();
     const statusRegex = new RegExp(statusPattern![1]);
     const [viform, sac] = recentProjects;
-    expect(viform.tags.find(tag => statusRegex.test(tag))).toBe("可恢复工作流");
+    expect(viform.tags.find(tag => statusRegex.test(tag))).toBe("可商业交付");
     expect(sac.tags.find(tag => statusRegex.test(tag))).toBe("可演示交付");
     expect(source).toMatch(/<span className="pf-status">\s*<i \/>\s*\{status\}/);
   });
 
   it("states demonstrable deliverables and their acceptance boundaries", () => {
     const [viform, sac] = recentProjects;
-    expect(viform.tags).toEqual(["AI 创作", "工作台设计", "任务恢复", "可恢复工作流"]);
+    expect(viform.tags).toEqual(["可商业交付", "AI 创作", "工作台设计", "任务恢复", "可恢复工作流"]);
     expect(viform.content).toContain("参考→参数→生成→比较→恢复");
-    expect(viform.content).toContain("真实模型效果与生产部署仍按具体工具和样本分阶段验收");
+    expect(viform.content).toContain("生产模型效果与部署按阶段验收");
     expect(sac.tags).toContain("可演示交付");
     expect(sac.description).toContain("正式报名、投稿、短信及生产审核服务尚未接入");
     expect(sac.content).toContain("可演示交付物已齐");

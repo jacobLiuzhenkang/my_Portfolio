@@ -1,3 +1,4 @@
+import GrowthIntro from "@/components/GrowthIntro";
 import { usePhoneLayout } from "@/hooks/use-phone-layout";
 import PhoneGrowthHero from "@/components/mobile/PhoneGrowthHero";
 import { ArrowLeft, ArrowUpRight, Download, FileText } from "lucide-react";
@@ -11,24 +12,22 @@ import { trpc } from "@/providers/trpc-client";
 
 const groupMeta = [
   {
-    name: "Agent 协作",
+    name: "Agent",
+    prefixes: ["Agent 协作"],
     english: "AGENT COLLABORATION",
     description: "拆解任务、组织上下文，校验并整合结果。",
   },
   {
     name: "AI 产品",
+    prefixes: ["AI 产品", "AI 工作流"],
     english: "PRODUCT THINKING",
     description: "理解业务问题，定义产品路径与使用场景。",
   },
   {
-    name: "工程实现",
-    english: "PRODUCT ENGINEERING",
-    description: "借助 AI 协作开发，让产品可以实际运行。",
-  },
-  {
-    name: "AI 工作流",
-    english: "APPLIED WORKFLOWS",
-    description: "把模型、工具与实际内容生产流程连接起来。",
+    name: "交付",
+    prefixes: ["工程实现"],
+    english: "DELIVERY",
+    description: "实现前后端，核对结果并协作推进交付。",
   },
 ];
 
@@ -42,8 +41,10 @@ export default function Growth() {
     .map(group => ({
       ...group,
       items: profile.skills
-        .filter(skill => skill.startsWith(`${group.name}｜`))
-        .map(skill => skill.slice(group.name.length + 1)),
+        .filter(skill =>
+          group.prefixes.some(prefix => skill.startsWith(`${prefix}｜`))
+        )
+        .map(skill => skill.split("｜").slice(1).join("｜")),
     }))
     .filter(group => group.items.length > 0);
   const otherSkills = profile.skills.filter(skill => !skill.includes("｜"));
@@ -51,47 +52,19 @@ export default function Growth() {
     <div className="pf-page pf-growth">
       <PortfolioHeader active="growth" />
       <main id="main-content">
-        {phone ? <PhoneGrowthHero profile={profile} current={experiences[0]} /> : (
-        <section
-          className="pf-growth-hero"
-          data-scene="growth"
-          aria-labelledby="growth-title"
-        >
-          <div className="pf-width">
-            <p className="pf-eyebrow">ABOUT / {profile.englishName}</p>
-            <h1 id="growth-title">
-              从设计出发，
-              <br />
-              <span>走向产品交付。</span>
-            </h1>
-            <p className="pf-growth-identity">
-              {profile.fullName}
-              <span>{profile.role}</span>
-              <small>
-                {profile.company} · {profile.location}
-              </small>
-            </p>
-            <div className="pf-growth-introduction">
-              {profile.transitionStory
-                .split("\n")
-                .filter(Boolean)
-                .map(paragraph => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+        {phone ? (
+          <PhoneGrowthHero profile={profile} />
+        ) : (
+          <section
+            className="pf-growth-hero"
+            data-scene="growth"
+            aria-labelledby="growth-title"
+          >
+            <div className="pf-width">
+              <p className="pf-eyebrow">ABOUT / {profile.englishName}</p>
+              <GrowthIntro profile={profile} />
             </div>
-            <div className="pf-actions">
-              <a
-                className="pf-button pf-button-primary"
-                href="/api/resume/download"
-              >
-                下载中文简历 <Download size={17} />
-              </a>
-              <Link className="pf-case-link" to="/#work">
-                查看我的作品 <ArrowUpRight size={17} />
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
         )}
         <section
           className="pf-experience pf-section"
@@ -134,7 +107,7 @@ export default function Growth() {
                     </p>
                     {index === 0 ? (
                       <ul>
-                        {experience.achievements.map(item => (
+                        {experience.achievements.slice(0, 3).map(item => (
                           <li key={item}>{item}</li>
                         ))}
                       </ul>
@@ -144,7 +117,10 @@ export default function Growth() {
                           展开工作内容 <ArrowUpRight size={15} />
                         </summary>
                         <ul>
-                          {experience.achievements.map(item => (
+                          {(experience.company.includes("夏商")
+                            ? experience.achievements.slice(0, 3)
+                            : experience.achievements
+                          ).map(item => (
                             <li key={item}>{item}</li>
                           ))}
                         </ul>
@@ -194,17 +170,9 @@ export default function Growth() {
                 ))}
               </ul>
             )}
-            <div className="pf-foundation">
-              <div>
-                <p className="pf-eyebrow">DESIGN FOUNDATION</p>
-                <p>UI/UX · 视觉设计 · Design Ops · 品牌与组件体系</p>
-              </div>
-              <div>
-                <p className="pf-eyebrow">EDUCATION</p>
-                <h3>{profile.education.split("\n")[0]}</h3>
-                <p>{profile.education.split("\n").slice(1).join(" · ")}</p>
-              </div>
-            </div>
+            <p className="pf-growth-education">
+              教育 · {profile.education.split("\n").slice(0, 2).join(" · ")}
+            </p>
           </div>
         </section>
         <section
@@ -219,6 +187,9 @@ export default function Growth() {
               <p>一份便于阅读和分享的 PDF，记录当前定位、项目与职业经历。</p>
             </div>
             <div className="pf-actions">
+              <Link className="pf-button pf-button-primary" to="/#contact">
+                联系我 <ArrowUpRight size={17} />
+              </Link>
               <a
                 className="pf-button pf-button-ghost"
                 href="/api/resume/download?preview=1"
@@ -233,7 +204,7 @@ export default function Growth() {
                 href="/api/resume/download"
               >
                 <Download size={17} />
-                下载 PDF
+                下载简历
               </a>
             </div>
           </div>

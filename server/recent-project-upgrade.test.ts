@@ -1,3 +1,4 @@
+import { viformCommercialBaseline } from "../db/recent-commercial-baseline";
 import { describe, expect, it } from "vitest";
 import { caseMarkdown, recentCaseLayout } from "../contracts/project-content";
 import { recentProjects } from "../db/portfolio-content";
@@ -87,3 +88,25 @@ for (const [index, kind] of (["viform", "sac"] as const).entries()) {
     });
   });
 }
+
+
+describe("commercial VIFORM upgrade from PR#14", () => {
+  const next = recentProjects[0];
+  const baseline = { ...viformCommercialBaseline, content: recentCaseLayout(viformCommercialBaseline.content, "viform") };
+  it("updates each exact baseline field and is idempotent", () => {
+    expect(planRecentProjectUpdate(baseline, next, "viform")).toEqual({
+      patch: { description: next.description, content: next.content, tags: next.tags }, customFieldsKept: [],
+    });
+    expect(planRecentProjectUpdate(next, next, "viform").patch).toEqual({});
+  });
+  it("protects edited tags independently from unchanged copy", () => {
+    const result = planRecentProjectUpdate({ ...baseline, tags: [...baseline.tags, "管理员标记"] }, next, "viform");
+    expect(result.patch).toEqual({ description: next.description, content: next.content });
+    expect(result.customFieldsKept).toEqual(["tags"]);
+  });
+  it("protects edited copy while updating exact baseline tags", () => {
+    const result = planRecentProjectUpdate({ ...baseline, description: "管理员摘要", content: baseline.content + "\n新增进展" }, next, "viform");
+    expect(result.patch).toEqual({ tags: next.tags });
+    expect(result.customFieldsKept).toEqual(["description", "content"]);
+  });
+});
